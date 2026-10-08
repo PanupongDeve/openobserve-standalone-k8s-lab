@@ -1,0 +1,38 @@
+# kube-prometheus-stack Helm Configuration
+# Prometheus Agent Mode forwarding to OpenObserve
+
+grafana:
+  enabled: false
+
+alertmanager:
+  enabled: false
+
+prometheus:
+  prometheusSpec:
+    # Enable Agent Mode (pure scraper & forwarder without local TSDB storage overhead)
+    agentMode: true
+
+    # Remote Write directly to OpenObserve Prometheus ingestion endpoint
+    remoteWrite:
+      - url: "http://openobserve-openobserve-standalone.openobserve.svc.cluster.local:5080/api/default/prometheus/api/v1/write"
+        basicAuth:
+          username:
+            name: openobserve-auth
+            key: ZO_ROOT_USER_EMAIL
+          password:
+            name: openobserve-auth
+            key: ZO_ROOT_USER_PASSWORD
+
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+
+nodeExporter:
+  enabled: true
+
+kubeStateMetrics:
+  enabled: true

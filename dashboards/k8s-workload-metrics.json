@@ -1,0 +1,2660 @@
+[
+  {
+    "version": 8,
+    "dashboardId": "7514029933010616320",
+    "title": "Kubernetes / Compute Resources / Namespace (Workloads)",
+    "description": "",
+    "role": "",
+    "owner": "",
+    "created": "2026-10-08T18:32:20.074Z",
+    "tabs": [
+      {
+        "tabId": "default",
+        "name": "Default",
+        "panels": [
+          {
+            "id": "Panel_ID6072910",
+            "type": "area-stacked",
+            "title": "CPU Usage",
+            "description": "",
+            "config": {
+              "show_legends": true,
+              "legends_position": "right",
+              "unit": "percent-1",
+              "base_map": null,
+              "map_view": null
+            },
+            "queryType": "promql",
+            "queries": [
+              {
+                "query": "sum(\n  node_namespace_pod_container:container_cpu_usage_seconds_total:sum_irate{cluster=\"$cluster\", namespace=\"$namespace\"}\n* on(namespace,pod)\n  group_left(workload, workload_type) namespace_workload_pod:kube_pod_owner:relabel{cluster=\"$cluster\", namespace=\"$namespace\", workload_type=\"$type\"}\n) by (workload, workload_type)\n",
+                "vrlFunctionQuery": null,
+                "customQuery": true,
+                "fields": {
+                  "stream": "node_namespace_pod_container:container_cpu_usage_seconds_total:sum_irate",
+                  "stream_type": "metrics",
+                  "x": [],
+                  "y": [],
+                  "z": [],
+                  "breakdown": [],
+                  "filter": {
+                    "filterType": "group",
+                    "logicalOperator": "AND",
+                    "conditions": []
+                  }
+                },
+                "config": {
+                  "promql_legend": "{workload}"
+                }
+              }
+            ],
+            "layout": {
+              "x": 0,
+              "y": 0,
+              "w": 192,
+              "h": 12,
+              "i": 1
+            }
+          },
+          {
+            "id": "Panel_ID9871010",
+            "type": "area-stacked",
+            "title": "Memory Usage",
+            "description": "",
+            "config": {
+              "show_legends": true,
+              "legends_position": "right",
+              "unit": "bytes",
+              "base_map": null,
+              "map_view": null
+            },
+            "queryType": "promql",
+            "queries": [
+              {
+                "query": "sum(\n    container_memory_working_set_bytes{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", cluster=\"$cluster\", namespace=\"$namespace\", container!=\"\", image!=\"\"}\n  * on(namespace,pod)\n    group_left(workload, workload_type) namespace_workload_pod:kube_pod_owner:relabel{cluster=\"$cluster\", namespace=\"$namespace\", workload_type=\"$type\"}\n) by (workload, workload_type)\n",
+                "vrlFunctionQuery": null,
+                "customQuery": true,
+                "fields": {
+                  "stream": ":node_memory_MemAvailable_bytes:sum",
+                  "stream_type": "metrics",
+                  "x": [],
+                  "y": [],
+                  "z": [],
+                  "breakdown": [],
+                  "filter": {
+                    "filterType": "group",
+                    "logicalOperator": "AND",
+                    "conditions": []
+                  }
+                },
+                "config": {
+                  "promql_legend": "{workload}"
+                }
+              }
+            ],
+            "layout": {
+              "x": 0,
+              "y": 12,
+              "w": 192,
+              "h": 12,
+              "i": 2
+            }
+          },
+          {
+            "id": "Panel_ID6749110",
+            "type": "area-stacked",
+            "title": "Receive Bandwidth",
+            "description": "",
+            "config": {
+              "show_legends": true,
+              "legends_position": "right",
+              "unit": "bps",
+              "base_map": null,
+              "map_view": null
+            },
+            "queryType": "promql",
+            "queries": [
+              {
+                "query": "(sum(irate(container_network_receive_bytes_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", cluster=\"$cluster\", namespace=\"$namespace\"}[5m])\n* on (namespace,pod)\ngroup_left(workload,workload_type) namespace_workload_pod:kube_pod_owner:relabel{cluster=\"$cluster\", namespace=\"$namespace\", workload=~\".+\", workload_type=\"$type\"}) by (workload))\n",
+                "vrlFunctionQuery": null,
+                "customQuery": true,
+                "fields": {
+                  "stream": ":node_memory_MemAvailable_bytes:sum",
+                  "stream_type": "metrics",
+                  "x": [],
+                  "y": [],
+                  "z": [],
+                  "breakdown": [],
+                  "filter": {
+                    "filterType": "group",
+                    "logicalOperator": "AND",
+                    "conditions": []
+                  }
+                },
+                "config": {
+                  "promql_legend": "{workload}"
+                }
+              }
+            ],
+            "layout": {
+              "x": 0,
+              "y": 24,
+              "w": 96,
+              "h": 12,
+              "i": 3
+            }
+          },
+          {
+            "id": "Panel_ID8029810",
+            "type": "area-stacked",
+            "title": "Transmit Bandwidth",
+            "description": "",
+            "config": {
+              "show_legends": true,
+              "legends_position": "right",
+              "unit": "bps",
+              "base_map": null,
+              "map_view": null
+            },
+            "queryType": "promql",
+            "queries": [
+              {
+                "query": "(sum(irate(container_network_transmit_bytes_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", cluster=\"$cluster\", namespace=\"$namespace\"}[5m])\n* on (namespace,pod)\ngroup_left(workload,workload_type) namespace_workload_pod:kube_pod_owner:relabel{cluster=\"$cluster\", namespace=\"$namespace\", workload=~\".+\", workload_type=\"$type\"}) by (workload))\n",
+                "vrlFunctionQuery": null,
+                "customQuery": true,
+                "fields": {
+                  "stream": ":node_memory_MemAvailable_bytes:sum",
+                  "stream_type": "metrics",
+                  "x": [],
+                  "y": [],
+                  "z": [],
+                  "breakdown": [],
+                  "filter": {
+                    "filterType": "group",
+                    "logicalOperator": "AND",
+                    "conditions": []
+                  }
+                },
+                "config": {
+                  "promql_legend": "{workload}"
+                }
+              }
+            ],
+            "layout": {
+              "x": 96,
+              "y": 24,
+              "w": 96,
+              "h": 12,
+              "i": 4
+            }
+          },
+          {
+            "id": "Panel_ID1977210",
+            "type": "area-stacked",
+            "title": "Average Container Bandwidth by Workload: Received",
+            "description": "",
+            "config": {
+              "show_legends": true,
+              "legends_position": "right",
+              "unit": "bps",
+              "base_map": null,
+              "map_view": null
+            },
+            "queryType": "promql",
+            "queries": [
+              {
+                "query": "(avg(irate(container_network_receive_bytes_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", cluster=\"$cluster\", namespace=\"$namespace\"}[5m])\n* on (namespace,pod)\ngroup_left(workload,workload_type) namespace_workload_pod:kube_pod_owner:relabel{cluster=\"$cluster\", namespace=\"$namespace\", workload=~\".+\", workload_type=\"$type\"}) by (workload))\n",
+                "vrlFunctionQuery": null,
+                "customQuery": true,
+                "fields": {
+                  "stream": ":node_memory_MemAvailable_bytes:sum",
+                  "stream_type": "metrics",
+                  "x": [],
+                  "y": [],
+                  "z": [],
+                  "breakdown": [],
+                  "filter": {
+                    "filterType": "group",
+                    "logicalOperator": "AND",
+                    "conditions": []
+                  }
+                },
+                "config": {
+                  "promql_legend": "{workload}"
+                }
+              }
+            ],
+            "layout": {
+              "x": 0,
+              "y": 36,
+              "w": 96,
+              "h": 10,
+              "i": 5
+            }
+          },
+          {
+            "id": "Panel_ID9241810",
+            "type": "area-stacked",
+            "title": "Average Container Bandwidth by Workload: Transmitted",
+            "description": "",
+            "config": {
+              "show_legends": true,
+              "legends_position": "right",
+              "unit": "bps",
+              "base_map": null,
+              "map_view": null
+            },
+            "queryType": "promql",
+            "queries": [
+              {
+                "query": "(avg(irate(container_network_transmit_bytes_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", cluster=\"$cluster\", namespace=\"$namespace\"}[5m])\n* on (namespace,pod)\ngroup_left(workload,workload_type) namespace_workload_pod:kube_pod_owner:relabel{cluster=\"$cluster\", namespace=\"$namespace\", workload=~\".+\", workload_type=\"$type\"}) by (workload))\n",
+                "vrlFunctionQuery": null,
+                "customQuery": true,
+                "fields": {
+                  "stream": ":node_memory_MemAvailable_bytes:sum",
+                  "stream_type": "metrics",
+                  "x": [],
+                  "y": [],
+                  "z": [],
+                  "breakdown": [],
+                  "filter": {
+                    "filterType": "group",
+                    "logicalOperator": "AND",
+                    "conditions": []
+                  }
+                },
+                "config": {
+                  "promql_legend": "{workload}"
+                }
+              }
+            ],
+            "layout": {
+              "x": 96,
+              "y": 36,
+              "w": 96,
+              "h": 10,
+              "i": 6
+            }
+          },
+          {
+            "id": "Panel_ID1373810",
+            "type": "area-stacked",
+            "title": "Rate of Received Packets",
+            "description": "",
+            "config": {
+              "show_legends": true,
+              "legends_position": "right",
+              "base_map": null,
+              "map_view": null
+            },
+            "queryType": "promql",
+            "queries": [
+              {
+                "query": "(sum(irate(container_network_receive_packets_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", cluster=\"$cluster\", namespace=\"$namespace\"}[5m])\n* on (namespace,pod)\ngroup_left(workload,workload_type) namespace_workload_pod:kube_pod_owner:relabel{cluster=\"$cluster\", namespace=\"$namespace\", workload=~\".+\", workload_type=\"$type\"}) by (workload))\n",
+                "vrlFunctionQuery": null,
+                "customQuery": true,
+                "fields": {
+                  "stream": ":node_memory_MemAvailable_bytes:sum",
+                  "stream_type": "metrics",
+                  "x": [],
+                  "y": [],
+                  "z": [],
+                  "breakdown": [],
+                  "filter": {
+                    "filterType": "group",
+                    "logicalOperator": "AND",
+                    "conditions": []
+                  }
+                },
+                "config": {
+                  "promql_legend": "{workload}"
+                }
+              }
+            ],
+            "layout": {
+              "x": 0,
+              "y": 46,
+              "w": 96,
+              "h": 12,
+              "i": 7
+            }
+          },
+          {
+            "id": "Panel_ID5053410",
+            "type": "area-stacked",
+            "title": "Rate of Transmitted Packets",
+            "description": "",
+            "config": {
+              "show_legends": true,
+              "legends_position": "right",
+              "base_map": null,
+              "map_view": null
+            },
+            "queryType": "promql",
+            "queries": [
+              {
+                "query": "(sum(irate(container_network_transmit_packets_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", cluster=\"$cluster\", namespace=\"$namespace\"}[5m])\n* on (namespace,pod)\ngroup_left(workload,workload_type) namespace_workload_pod:kube_pod_owner:relabel{cluster=\"$cluster\", namespace=\"$namespace\", workload=~\".+\", workload_type=\"$type\"}) by (workload))\n",
+                "vrlFunctionQuery": null,
+                "customQuery": true,
+                "fields": {
+                  "stream": ":node_memory_MemAvailable_bytes:sum",
+                  "stream_type": "metrics",
+                  "x": [],
+                  "y": [],
+                  "z": [],
+                  "breakdown": [],
+                  "filter": {
+                    "filterType": "group",
+                    "logicalOperator": "AND",
+                    "conditions": []
+                  }
+                },
+                "config": {
+                  "promql_legend": "{workload}"
+                }
+              }
+            ],
+            "layout": {
+              "x": 96,
+              "y": 46,
+              "w": 96,
+              "h": 12,
+              "i": 8
+            }
+          },
+          {
+            "id": "Panel_ID6458010",
+            "type": "area-stacked",
+            "title": "Rate of Received Packets Dropped",
+            "description": "",
+            "config": {
+              "show_legends": true,
+              "legends_position": "right",
+              "base_map": null,
+              "map_view": null
+            },
+            "queryType": "promql",
+            "queries": [
+              {
+                "query": "(sum(irate(container_network_receive_packets_dropped_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", cluster=\"$cluster\", namespace=\"$namespace\"}[5m])\n* on (namespace,pod)\ngroup_left(workload,workload_type) namespace_workload_pod:kube_pod_owner:relabel{cluster=\"$cluster\", namespace=\"$namespace\", workload=~\".+\", workload_type=\"$type\"}) by (workload))\n",
+                "vrlFunctionQuery": null,
+                "customQuery": true,
+                "fields": {
+                  "stream": ":node_memory_MemAvailable_bytes:sum",
+                  "stream_type": "metrics",
+                  "x": [],
+                  "y": [],
+                  "z": [],
+                  "breakdown": [],
+                  "filter": {
+                    "filterType": "group",
+                    "logicalOperator": "AND",
+                    "conditions": []
+                  }
+                },
+                "config": {
+                  "promql_legend": "{workload}"
+                }
+              }
+            ],
+            "layout": {
+              "x": 0,
+              "y": 58,
+              "w": 96,
+              "h": 12,
+              "i": 9
+            }
+          },
+          {
+            "id": "Panel_ID9294910",
+            "type": "line",
+            "title": "Rate of Transmitted Packets Dropped",
+            "description": "",
+            "config": {
+              "show_legends": true,
+              "legends_position": "right",
+              "base_map": null,
+              "map_view": null
+            },
+            "queryType": "promql",
+            "queries": [
+              {
+                "query": "(sum(irate(container_network_transmit_packets_dropped_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", cluster=\"$cluster\", namespace=\"$namespace\"}[5m])\n* on (namespace,pod)\ngroup_left(workload,workload_type) namespace_workload_pod:kube_pod_owner:relabel{cluster=\"$cluster\", namespace=\"$namespace\", workload=~\".+\", workload_type=\"$type\"}) by (workload))\n",
+                "vrlFunctionQuery": null,
+                "customQuery": true,
+                "fields": {
+                  "stream": ":node_memory_MemAvailable_bytes:sum",
+                  "stream_type": "metrics",
+                  "x": [],
+                  "y": [],
+                  "z": [],
+                  "breakdown": [],
+                  "filter": {
+                    "filterType": "group",
+                    "logicalOperator": "AND",
+                    "conditions": []
+                  }
+                },
+                "config": {
+                  "promql_legend": "{workload}"
+                }
+              }
+            ],
+            "layout": {
+              "x": 96,
+              "y": 58,
+              "w": 96,
+              "h": 12,
+              "i": 10
+            }
+          }
+        ]
+      }
+    ],
+    "variables": {
+      "list": [
+        {
+          "type": "query_values",
+          "name": "namespace",
+          "label": "",
+          "query_data": {
+            "stream_type": "metrics",
+            "stream": "node_namespace_pod_container:container_cpu_usage_seconds_total:sum_irate",
+            "field": "namespace",
+            "max_record_size": null
+          },
+          "value": "",
+          "options": []
+        },
+        {
+          "type": "query_values",
+          "name": "type",
+          "label": "Workload_type",
+          "query_data": {
+            "stream_type": "metrics",
+            "stream": "namespace_workload_pod:kube_pod_owner:relabel",
+            "field": "workload_type",
+            "max_record_size": null
+          },
+          "value": "",
+          "options": []
+        }
+      ],
+      "showDynamicFilters": false
+    }
+  },
+  {
+    "version": 8,
+    "dashboardId": "7514029465786122240",
+    "title": "Kubernetes / Compute Resources / Namespace (Pods)",
+    "description": "",
+    "role": "",
+    "owner": "",
+    "created": "2026-10-08T18:30:28.658Z",
+    "tabs": [
+      {
+        "tabId": "default",
+        "name": "Default",
+        "panels": [
+          {
+            "id": "Panel_ID2748710",
+            "type": "metric",
+            "title": "CPU Utilisation (from requests)",
+            "description": "",
+            "config": {
+              "show_legends": true,
+              "legends_position": null,
+              "base_map": null,
+              "map_view": null
+            },
+            "queryType": "promql",
+            "queries": [
+              {
+                "query": "sum(node_namespace_pod_container:container_cpu_usage_seconds_total:sum_irate{cluster=\"$cluster\", namespace=\"$namespace\"}) / sum(kube_pod_container_resource_requests{job=\"kube-state-metrics\", cluster=\"$cluster\", namespace=\"$namespace\", resource=\"cpu\"})",
+                "vrlFunctionQuery": null,
+                "customQuery": true,
+                "fields": {
+                  "stream": ":node_memory_MemAvailable_bytes:sum",
+                  "stream_type": "metrics",
+                  "x": [],
+                  "y": [],
+                  "z": [],
+                  "breakdown": [],
+                  "filter": {
+                    "filterType": "group",
+                    "logicalOperator": "AND",
+                    "conditions": []
+                  }
+                },
+                "config": {
+                  "promql_legend": ""
+                }
+              }
+            ],
+            "layout": {
+              "x": 0,
+              "y": 0,
+              "w": 48,
+              "h": 12,
+              "i": 1
+            }
+          },
+          {
+            "id": "Panel_ID7030010",
+            "type": "line",
+            "title": "CPU Utilisation (from limits)",
+            "description": "",
+            "config": {
+              "show_legends": true,
+              "legends_position": null,
+              "base_map": null,
+              "map_view": null
+            },
+            "queryType": "promql",
+            "queries": [
+              {
+                "query": "sum(node_namespace_pod_container:container_cpu_usage_seconds_total:sum_irate{cluster=\"$cluster\", namespace=\"$namespace\"}) / sum(kube_pod_container_resource_limits{job=\"kube-state-metrics\", cluster=\"$cluster\", namespace=\"$namespace\", resource=\"cpu\"})",
+                "vrlFunctionQuery": null,
+                "customQuery": true,
+                "fields": {
+                  "stream": ":node_memory_MemAvailable_bytes:sum",
+                  "stream_type": "metrics",
+                  "x": [],
+                  "y": [],
+                  "z": [],
+                  "breakdown": [],
+                  "filter": {
+                    "filterType": "group",
+                    "logicalOperator": "AND",
+                    "conditions": []
+                  }
+                },
+                "config": {
+                  "promql_legend": ""
+                }
+              }
+            ],
+            "layout": {
+              "x": 48,
+              "y": 0,
+              "w": 48,
+              "h": 12,
+              "i": 2
+            }
+          },
+          {
+            "id": "Panel_ID8244810",
+            "type": "metric",
+            "title": "Memory Utilisation (from requests)",
+            "description": "",
+            "config": {
+              "show_legends": true,
+              "legends_position": null,
+              "base_map": null,
+              "map_view": null
+            },
+            "queryType": "promql",
+            "queries": [
+              {
+                "query": "sum(container_memory_working_set_bytes{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", cluster=\"$cluster\", namespace=\"$namespace\",container!=\"\", image!=\"\"}) / sum(kube_pod_container_resource_requests{job=\"kube-state-metrics\", cluster=\"$cluster\", namespace=\"$namespace\", resource=\"memory\"})",
+                "vrlFunctionQuery": null,
+                "customQuery": true,
+                "fields": {
+                  "stream": ":node_memory_MemAvailable_bytes:sum",
+                  "stream_type": "metrics",
+                  "x": [],
+                  "y": [],
+                  "z": [],
+                  "breakdown": [],
+                  "filter": {
+                    "filterType": "group",
+                    "logicalOperator": "AND",
+                    "conditions": []
+                  }
+                },
+                "config": {
+                  "promql_legend": ""
+                }
+              }
+            ],
+            "layout": {
+              "x": 96,
+              "y": 0,
+              "w": 48,
+              "h": 12,
+              "i": 3
+            }
+          },
+          {
+            "id": "Panel_ID7701810",
+            "type": "metric",
+            "title": "Memory Utilisation (from limits)",
+            "description": "",
+            "config": {
+              "show_legends": true,
+              "legends_position": null,
+              "base_map": null,
+              "map_view": null
+            },
+            "queryType": "promql",
+            "queries": [
+              {
+                "query": "sum(container_memory_working_set_bytes{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", cluster=\"$cluster\", namespace=\"$namespace\",container!=\"\", image!=\"\"}) / sum(kube_pod_container_resource_limits{job=\"kube-state-metrics\", cluster=\"$cluster\", namespace=\"$namespace\", resource=\"memory\"})",
+                "vrlFunctionQuery": null,
+                "customQuery": true,
+                "fields": {
+                  "stream": ":node_memory_MemAvailable_bytes:sum",
+                  "stream_type": "metrics",
+                  "x": [],
+                  "y": [],
+                  "z": [],
+                  "breakdown": [],
+                  "filter": {
+                    "filterType": "group",
+                    "logicalOperator": "AND",
+                    "conditions": []
+                  }
+                },
+                "config": {
+                  "promql_legend": ""
+                }
+              }
+            ],
+            "layout": {
+              "x": 144,
+              "y": 0,
+              "w": 48,
+              "h": 12,
+              "i": 4
+            }
+          },
+          {
+            "id": "Panel_ID375110",
+            "type": "area-stacked",
+            "title": "CPU Usage",
+            "description": "",
+            "config": {
+              "show_legends": true,
+              "legends_position": "right",
+              "unit": "custom",
+              "unit_custom": "%",
+              "base_map": null,
+              "map_view": null
+            },
+            "queryType": "promql",
+            "queries": [
+              {
+                "query": "sum(round(node_namespace_pod_container:container_cpu_usage_seconds_total:sum_irate{cluster=\"$cluster\", namespace=\"$namespace\"}*100)) by (pod)",
+                "vrlFunctionQuery": null,
+                "customQuery": true,
+                "fields": {
+                  "stream": ":node_memory_MemAvailable_bytes:sum",
+                  "stream_type": "metrics",
+                  "x": [],
+                  "y": [],
+                  "z": [],
+                  "breakdown": [],
+                  "filter": {
+                    "filterType": "group",
+                    "logicalOperator": "AND",
+                    "conditions": []
+                  }
+                },
+                "config": {
+                  "promql_legend": "{pod}"
+                }
+              }
+            ],
+            "layout": {
+              "x": 0,
+              "y": 12,
+              "w": 192,
+              "h": 16,
+              "i": 5
+            }
+          },
+          {
+            "id": "Panel_ID6422210",
+            "type": "area-stacked",
+            "title": "Memory Usage (w/o cache)",
+            "description": "",
+            "config": {
+              "show_legends": true,
+              "legends_position": "right",
+              "unit": "bytes",
+              "base_map": null,
+              "map_view": null
+            },
+            "queryType": "promql",
+            "queries": [
+              {
+                "query": "sum(container_memory_working_set_bytes{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", cluster=\"$cluster\", namespace=\"$namespace\", container!=\"\", image!=\"\"}) by (pod)",
+                "vrlFunctionQuery": null,
+                "customQuery": true,
+                "fields": {
+                  "stream": ":node_memory_MemAvailable_bytes:sum",
+                  "stream_type": "metrics",
+                  "x": [],
+                  "y": [],
+                  "z": [],
+                  "breakdown": [],
+                  "filter": {
+                    "filterType": "group",
+                    "logicalOperator": "AND",
+                    "conditions": []
+                  }
+                },
+                "config": {
+                  "promql_legend": "{pod}"
+                }
+              }
+            ],
+            "layout": {
+              "x": 0,
+              "y": 28,
+              "w": 192,
+              "h": 12,
+              "i": 6
+            }
+          },
+          {
+            "id": "Panel_ID3716310",
+            "type": "area-stacked",
+            "title": "Receive Bandwidth",
+            "description": "",
+            "config": {
+              "show_legends": true,
+              "legends_position": "right",
+              "unit": "bps",
+              "base_map": null,
+              "map_view": null
+            },
+            "queryType": "promql",
+            "queries": [
+              {
+                "query": "sum(irate(container_network_receive_bytes_total{cluster=\"$cluster\", namespace=\"$namespace\"}[5m])) by (pod)",
+                "vrlFunctionQuery": null,
+                "customQuery": true,
+                "fields": {
+                  "stream": ":node_memory_MemAvailable_bytes:sum",
+                  "stream_type": "metrics",
+                  "x": [],
+                  "y": [],
+                  "z": [],
+                  "breakdown": [],
+                  "filter": {
+                    "filterType": "group",
+                    "logicalOperator": "AND",
+                    "conditions": []
+                  }
+                },
+                "config": {
+                  "promql_legend": "{pod}"
+                }
+              }
+            ],
+            "layout": {
+              "x": 0,
+              "y": 40,
+              "w": 96,
+              "h": 14,
+              "i": 7
+            }
+          },
+          {
+            "id": "Panel_ID401510",
+            "type": "area-stacked",
+            "title": "Transmit Bandwidth",
+            "description": "",
+            "config": {
+              "show_legends": true,
+              "legends_position": "right",
+              "unit": "bps",
+              "base_map": null,
+              "map_view": null
+            },
+            "queryType": "promql",
+            "queries": [
+              {
+                "query": "sum(irate(container_network_transmit_bytes_total{cluster=\"$cluster\", namespace=\"$namespace\"}[5m])) by (pod)",
+                "vrlFunctionQuery": null,
+                "customQuery": true,
+                "fields": {
+                  "stream": ":node_memory_MemAvailable_bytes:sum",
+                  "stream_type": "metrics",
+                  "x": [],
+                  "y": [],
+                  "z": [],
+                  "breakdown": [],
+                  "filter": {
+                    "filterType": "group",
+                    "logicalOperator": "AND",
+                    "conditions": []
+                  }
+                },
+                "config": {
+                  "promql_legend": "{pod}"
+                }
+              }
+            ],
+            "layout": {
+              "x": 96,
+              "y": 40,
+              "w": 96,
+              "h": 14,
+              "i": 8
+            }
+          },
+          {
+            "id": "Panel_ID2195310",
+            "type": "area-stacked",
+            "title": "Rate of Received Packets",
+            "description": "",
+            "config": {
+              "show_legends": true,
+              "legends_position": "right",
+              "base_map": null,
+              "map_view": null
+            },
+            "queryType": "promql",
+            "queries": [
+              {
+                "query": "sum(irate(container_network_receive_packets_total{cluster=\"$cluster\", namespace=\"$namespace\"}[5m])) by (pod)",
+                "vrlFunctionQuery": null,
+                "customQuery": true,
+                "fields": {
+                  "stream": ":node_memory_MemAvailable_bytes:sum",
+                  "stream_type": "metrics",
+                  "x": [],
+                  "y": [],
+                  "z": [],
+                  "breakdown": [],
+                  "filter": {
+                    "filterType": "group",
+                    "logicalOperator": "AND",
+                    "conditions": []
+                  }
+                },
+                "config": {
+                  "promql_legend": "{pod}"
+                }
+              }
+            ],
+            "layout": {
+              "x": 0,
+              "y": 54,
+              "w": 96,
+              "h": 14,
+              "i": 9
+            }
+          },
+          {
+            "id": "Panel_ID8273110",
+            "type": "area-stacked",
+            "title": "Rate of Transmitted Packets",
+            "description": "",
+            "config": {
+              "show_legends": true,
+              "legends_position": "right",
+              "base_map": null,
+              "map_view": null
+            },
+            "queryType": "promql",
+            "queries": [
+              {
+                "query": "sum(irate(container_network_transmit_packets_total{cluster=\"$cluster\", namespace=\"$namespace\"}[5m])) by (pod)",
+                "vrlFunctionQuery": null,
+                "customQuery": true,
+                "fields": {
+                  "stream": ":node_memory_MemAvailable_bytes:sum",
+                  "stream_type": "metrics",
+                  "x": [],
+                  "y": [],
+                  "z": [],
+                  "breakdown": [],
+                  "filter": {
+                    "filterType": "group",
+                    "logicalOperator": "AND",
+                    "conditions": []
+                  }
+                },
+                "config": {
+                  "promql_legend": "{pod}"
+                }
+              }
+            ],
+            "layout": {
+              "x": 96,
+              "y": 54,
+              "w": 96,
+              "h": 14,
+              "i": 10
+            }
+          },
+          {
+            "id": "Panel_ID626010",
+            "type": "area-stacked",
+            "title": "Rate of Received Packets Dropped",
+            "description": "",
+            "config": {
+              "show_legends": true,
+              "legends_position": "right",
+              "base_map": null,
+              "map_view": null
+            },
+            "queryType": "promql",
+            "queries": [
+              {
+                "query": "sum(irate(container_network_receive_packets_dropped_total{cluster=\"$cluster\", namespace=\"$namespace\"}[5m])) by (pod)",
+                "vrlFunctionQuery": null,
+                "customQuery": true,
+                "fields": {
+                  "stream": ":node_memory_MemAvailable_bytes:sum",
+                  "stream_type": "metrics",
+                  "x": [],
+                  "y": [],
+                  "z": [],
+                  "breakdown": [],
+                  "filter": {
+                    "filterType": "group",
+                    "logicalOperator": "AND",
+                    "conditions": []
+                  }
+                },
+                "config": {
+                  "promql_legend": "{pod}"
+                }
+              }
+            ],
+            "layout": {
+              "x": 0,
+              "y": 68,
+              "w": 96,
+              "h": 14,
+              "i": 11
+            }
+          },
+          {
+            "id": "Panel_ID5239810",
+            "type": "line",
+            "title": "Rate of Transmitted Packets Dropped",
+            "description": "",
+            "config": {
+              "show_legends": true,
+              "legends_position": "right",
+              "base_map": null,
+              "map_view": null
+            },
+            "queryType": "promql",
+            "queries": [
+              {
+                "query": "sum(irate(container_network_transmit_packets_dropped_total{cluster=\"$cluster\", namespace=\"$namespace\"}[5m])) by (pod)",
+                "vrlFunctionQuery": null,
+                "customQuery": true,
+                "fields": {
+                  "stream": ":node_memory_MemAvailable_bytes:sum",
+                  "stream_type": "metrics",
+                  "x": [],
+                  "y": [],
+                  "z": [],
+                  "breakdown": [],
+                  "filter": {
+                    "filterType": "group",
+                    "logicalOperator": "AND",
+                    "conditions": []
+                  }
+                },
+                "config": {
+                  "promql_legend": "{pod}"
+                }
+              }
+            ],
+            "layout": {
+              "x": 96,
+              "y": 68,
+              "w": 96,
+              "h": 14,
+              "i": 12
+            }
+          },
+          {
+            "id": "Panel_ID5907810",
+            "type": "line",
+            "title": "IOPS(Reads+Writes)",
+            "description": "",
+            "config": {
+              "show_legends": true,
+              "legends_position": "right",
+              "base_map": null,
+              "map_view": null
+            },
+            "queryType": "promql",
+            "queries": [
+              {
+                "query": "ceil(sum by(pod) (rate(container_fs_reads_total{container!=\"\", device=~\"(/dev/)?(mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|md.+|dasd.+)\", cluster=\"$cluster\", namespace=\"$namespace\"}[5m]) + rate(container_fs_writes_total{container!=\"\", device=~\"(/dev/)?(mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|md.+|dasd.+)\", cluster=\"$cluster\", namespace=\"$namespace\"}[5m])))",
+                "vrlFunctionQuery": null,
+                "customQuery": true,
+                "fields": {
+                  "stream": ":node_memory_MemAvailable_bytes:sum",
+                  "stream_type": "metrics",
+                  "x": [],
+                  "y": [],
+                  "z": [],
+                  "breakdown": [],
+                  "filter": {
+                    "filterType": "group",
+                    "logicalOperator": "AND",
+                    "conditions": []
+                  }
+                },
+                "config": {
+                  "promql_legend": "{pod}"
+                }
+              }
+            ],
+            "layout": {
+              "x": 0,
+              "y": 82,
+              "w": 96,
+              "h": 14,
+              "i": 13
+            }
+          },
+          {
+            "id": "Panel_ID3350110",
+            "type": "line",
+            "title": "ThroughPut(Read+Write)",
+            "description": "",
+            "config": {
+              "show_legends": true,
+              "legends_position": null,
+              "base_map": null,
+              "map_view": null
+            },
+            "queryType": "promql",
+            "queries": [
+              {
+                "query": "sum by(pod) (rate(container_fs_reads_bytes_total{container!=\"\", device=~\"(/dev/)?(mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|md.+|dasd.+)\", cluster=\"$cluster\", namespace=\"$namespace\"}[5m]) + rate(container_fs_writes_bytes_total{container!=\"\", device=~\"(/dev/)?(mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|md.+|dasd.+)\", cluster=\"$cluster\", namespace=\"$namespace\"}[5m]))",
+                "vrlFunctionQuery": null,
+                "customQuery": true,
+                "fields": {
+                  "stream": ":node_memory_MemAvailable_bytes:sum",
+                  "stream_type": "metrics",
+                  "x": [],
+                  "y": [],
+                  "z": [],
+                  "breakdown": [],
+                  "filter": {
+                    "filterType": "group",
+                    "logicalOperator": "AND",
+                    "conditions": []
+                  }
+                },
+                "config": {
+                  "promql_legend": ""
+                }
+              }
+            ],
+            "layout": {
+              "x": 96,
+              "y": 82,
+              "w": 96,
+              "h": 14,
+              "i": 14
+            }
+          }
+        ]
+      }
+    ],
+    "variables": {
+      "list": [
+        {
+          "type": "query_values",
+          "name": "namespace",
+          "label": "",
+          "query_data": {
+            "stream_type": "metrics",
+            "stream": "node_namespace_pod_container:container_cpu_usage_seconds_total:sum_irate",
+            "field": "namespace",
+            "max_record_size": null
+          },
+          "value": "",
+          "options": []
+        }
+      ],
+      "showDynamicFilters": false
+    }
+  },
+  {
+    "version": 8,
+    "dashboardId": "7514029107097632768",
+    "title": "Kubernetes / API server",
+    "description": "",
+    "role": "",
+    "owner": "",
+    "created": "2026-10-08T18:29:03.177Z",
+    "tabs": [
+      {
+        "tabId": "default",
+        "name": "Default",
+        "panels": [
+          {
+            "id": "Panel_ID5834210",
+            "type": "metric",
+            "title": "Availability (30d) > 99.000%",
+            "description": "",
+            "config": {
+              "show_legends": true,
+              "legends_position": null,
+              "unit": "percent-1",
+              "base_map": null,
+              "map_view": null
+            },
+            "queryType": "promql",
+            "queries": [
+              {
+                "query": "apiserver_request:availability30d{verb=\"all\", cluster=\"\"}",
+                "vrlFunctionQuery": null,
+                "customQuery": true,
+                "fields": {
+                  "stream": ":node_memory_MemAvailable_bytes:sum",
+                  "stream_type": "metrics",
+                  "x": [],
+                  "y": [],
+                  "z": [],
+                  "breakdown": [],
+                  "filter": {
+                    "filterType": "group",
+                    "logicalOperator": "AND",
+                    "conditions": []
+                  }
+                },
+                "config": {
+                  "promql_legend": ""
+                }
+              }
+            ],
+            "layout": {
+              "x": 0,
+              "y": 0,
+              "w": 64,
+              "h": 12,
+              "i": 1
+            }
+          },
+          {
+            "id": "Panel_ID6065210",
+            "type": "area",
+            "title": "ErrorBudget (30d) > 99.000%",
+            "description": "",
+            "config": {
+              "show_legends": true,
+              "legends_position": "right",
+              "unit": "percent-1",
+              "base_map": null,
+              "map_view": null
+            },
+            "queryType": "promql",
+            "queries": [
+              {
+                "query": "100 * (apiserver_request:availability30d{verb=\"all\", cluster=\"\"} - 0.990000)",
+                "vrlFunctionQuery": null,
+                "customQuery": true,
+                "fields": {
+                  "stream": ":node_memory_MemAvailable_bytes:sum",
+                  "stream_type": "metrics",
+                  "x": [],
+                  "y": [],
+                  "z": [],
+                  "breakdown": [],
+                  "filter": {
+                    "filterType": "group",
+                    "logicalOperator": "AND",
+                    "conditions": []
+                  }
+                },
+                "config": {
+                  "promql_legend": ""
+                }
+              }
+            ],
+            "layout": {
+              "x": 64,
+              "y": 0,
+              "w": 128,
+              "h": 12,
+              "i": 2
+            }
+          },
+          {
+            "id": "Panel_ID8687110",
+            "type": "metric",
+            "title": "Read Availability (30d)",
+            "description": "",
+            "config": {
+              "show_legends": true,
+              "legends_position": null,
+              "unit": "percent-1",
+              "base_map": null,
+              "map_view": null
+            },
+            "queryType": "promql",
+            "queries": [
+              {
+                "query": "apiserver_request:availability30d{verb=\"read\", cluster=\"\"}",
+                "vrlFunctionQuery": null,
+                "customQuery": true,
+                "fields": {
+                  "stream": "",
+                  "stream_type": "metrics",
+                  "x": [],
+                  "y": [],
+                  "z": [],
+                  "breakdown": [],
+                  "filter": {
+                    "filterType": "group",
+                    "logicalOperator": "AND",
+                    "conditions": []
+                  }
+                },
+                "config": {
+                  "promql_legend": ""
+                }
+              }
+            ],
+            "layout": {
+              "x": 0,
+              "y": 12,
+              "w": 32,
+              "h": 12,
+              "i": 4
+            }
+          },
+          {
+            "id": "Panel_ID3016810",
+            "type": "metric",
+            "title": "Write Availability (30d)",
+            "description": "",
+            "config": {
+              "show_legends": true,
+              "legends_position": null,
+              "unit": "percent-1",
+              "base_map": null,
+              "map_view": null
+            },
+            "queryType": "promql",
+            "queries": [
+              {
+                "query": "apiserver_request:availability30d{verb=\"write\", cluster=\"\"}",
+                "vrlFunctionQuery": null,
+                "customQuery": true,
+                "fields": {
+                  "stream": ":node_memory_MemAvailable_bytes:sum",
+                  "stream_type": "metrics",
+                  "x": [],
+                  "y": [],
+                  "z": [],
+                  "breakdown": [],
+                  "filter": {
+                    "filterType": "group",
+                    "logicalOperator": "AND",
+                    "conditions": []
+                  }
+                },
+                "config": {
+                  "promql_legend": ""
+                }
+              }
+            ],
+            "layout": {
+              "x": 0,
+              "y": 24,
+              "w": 32,
+              "h": 12,
+              "i": 5
+            }
+          },
+          {
+            "id": "Panel_ID2700010",
+            "type": "area",
+            "title": "Read SLI - Requests",
+            "description": "",
+            "config": {
+              "show_legends": true,
+              "legends_position": "right",
+              "base_map": null,
+              "map_view": null
+            },
+            "queryType": "promql",
+            "queries": [
+              {
+                "query": "sum by (code) (code_resource:apiserver_request_total:rate5m{verb=\"read\", cluster=\"\"})",
+                "vrlFunctionQuery": null,
+                "customQuery": true,
+                "fields": {
+                  "stream": ":node_memory_MemAvailable_bytes:sum",
+                  "stream_type": "metrics",
+                  "x": [],
+                  "y": [],
+                  "z": [],
+                  "breakdown": [],
+                  "filter": {
+                    "filterType": "group",
+                    "logicalOperator": "AND",
+                    "conditions": []
+                  }
+                },
+                "config": {
+                  "promql_legend": "{code}"
+                }
+              }
+            ],
+            "layout": {
+              "x": 32,
+              "y": 12,
+              "w": 48,
+              "h": 12,
+              "i": 6
+            }
+          },
+          {
+            "id": "Panel_ID441810",
+            "type": "area",
+            "title": "Read SLI - Errors",
+            "description": "",
+            "config": {
+              "show_legends": true,
+              "legends_position": "right",
+              "base_map": null,
+              "map_view": null
+            },
+            "queryType": "promql",
+            "queries": [
+              {
+                "query": "sum by (resource) (code_resource:apiserver_request_total:rate5m{verb=\"read\",code=~\"5..\", cluster=\"\"}) / sum by (resource) (code_resource:apiserver_request_total:rate5m{verb=\"read\", cluster=\"\"})",
+                "vrlFunctionQuery": null,
+                "customQuery": true,
+                "fields": {
+                  "stream": ":node_memory_MemAvailable_bytes:sum",
+                  "stream_type": "metrics",
+                  "x": [],
+                  "y": [],
+                  "z": [],
+                  "breakdown": [],
+                  "filter": {
+                    "filterType": "group",
+                    "logicalOperator": "AND",
+                    "conditions": []
+                  }
+                },
+                "config": {
+                  "promql_legend": "{resource}"
+                }
+              }
+            ],
+            "layout": {
+              "x": 80,
+              "y": 12,
+              "w": 48,
+              "h": 12,
+              "i": 7
+            }
+          },
+          {
+            "id": "Panel_ID3467410",
+            "type": "area-stacked",
+            "title": "Read SLI - Duration",
+            "description": "",
+            "config": {
+              "show_legends": true,
+              "legends_position": "right",
+              "unit": "seconds",
+              "base_map": null,
+              "map_view": null
+            },
+            "queryType": "promql",
+            "queries": [
+              {
+                "query": "cluster_quantile:apiserver_request_slo_duration_seconds:histogram_quantile{verb=\"read\", cluster=\"\"}",
+                "vrlFunctionQuery": null,
+                "customQuery": true,
+                "fields": {
+                  "stream": "cluster_quantile:apiserver_request_slo_duration_seconds:histogram_quantile",
+                  "stream_type": "metrics",
+                  "x": [],
+                  "y": [],
+                  "z": [],
+                  "breakdown": [],
+                  "filter": {
+                    "filterType": "group",
+                    "logicalOperator": "AND",
+                    "conditions": []
+                  }
+                },
+                "config": {
+                  "promql_legend": "{resource}"
+                }
+              }
+            ],
+            "layout": {
+              "x": 128,
+              "y": 12,
+              "w": 64,
+              "h": 12,
+              "i": 8
+            }
+          },
+          {
+            "id": "Panel_ID1500210",
+            "type": "area-stacked",
+            "title": "Write SLI - Requests",
+            "description": "",
+            "config": {
+              "show_legends": true,
+              "legends_position": "right",
+              "base_map": null,
+              "map_view": null
+            },
+            "queryType": "promql",
+            "queries": [
+              {
+                "query": "sum by (code) (code_resource:apiserver_request_total:rate5m{verb=\"write\", cluster=\"\"})",
+                "vrlFunctionQuery": null,
+                "customQuery": true,
+                "fields": {
+                  "stream": ":node_memory_MemAvailable_bytes:sum",
+                  "stream_type": "metrics",
+                  "x": [],
+                  "y": [],
+                  "z": [],
+                  "breakdown": [],
+                  "filter": {
+                    "filterType": "group",
+                    "logicalOperator": "AND",
+                    "conditions": []
+                  }
+                },
+                "config": {
+                  "promql_legend": "{code}"
+                }
+              }
+            ],
+            "layout": {
+              "x": 32,
+              "y": 24,
+              "w": 48,
+              "h": 12,
+              "i": 9
+            }
+          },
+          {
+            "id": "Panel_ID7667510",
+            "type": "area",
+            "title": "Write SLI - Errors",
+            "description": "",
+            "config": {
+              "show_legends": true,
+              "legends_position": "right",
+              "base_map": null,
+              "map_view": null
+            },
+            "queryType": "promql",
+            "queries": [
+              {
+                "query": "sum by (resource) (code_resource:apiserver_request_total:rate5m{verb=\"write\",code=~\"5..\", cluster=\"\"}) / sum by (resource) (code_resource:apiserver_request_total:rate5m{verb=\"read\", cluster=\"\"})",
+                "vrlFunctionQuery": null,
+                "customQuery": true,
+                "fields": {
+                  "stream": ":node_memory_MemAvailable_bytes:sum",
+                  "stream_type": "metrics",
+                  "x": [],
+                  "y": [],
+                  "z": [],
+                  "breakdown": [],
+                  "filter": {
+                    "filterType": "group",
+                    "logicalOperator": "AND",
+                    "conditions": []
+                  }
+                },
+                "config": {
+                  "promql_legend": "{resource}"
+                }
+              }
+            ],
+            "layout": {
+              "x": 80,
+              "y": 24,
+              "w": 48,
+              "h": 12,
+              "i": 10
+            }
+          },
+          {
+            "id": "Panel_ID253910",
+            "type": "area-stacked",
+            "title": "Write SLI - Duration",
+            "description": "",
+            "config": {
+              "show_legends": true,
+              "legends_position": "right",
+              "unit": "seconds",
+              "base_map": null,
+              "map_view": null
+            },
+            "queryType": "promql",
+            "queries": [
+              {
+                "query": "cluster_quantile:apiserver_request_slo_duration_seconds:histogram_quantile{verb=\"write\", cluster=\"\"}",
+                "vrlFunctionQuery": null,
+                "customQuery": true,
+                "fields": {
+                  "stream": "cluster_quantile:apiserver_request_slo_duration_seconds:histogram_quantile",
+                  "stream_type": "metrics",
+                  "x": [],
+                  "y": [],
+                  "z": [],
+                  "breakdown": [],
+                  "filter": {
+                    "filterType": "group",
+                    "logicalOperator": "AND",
+                    "conditions": []
+                  }
+                },
+                "config": {
+                  "promql_legend": "{resource}"
+                }
+              }
+            ],
+            "layout": {
+              "x": 128,
+              "y": 24,
+              "w": 64,
+              "h": 12,
+              "i": 11
+            }
+          },
+          {
+            "id": "Panel_ID1489510",
+            "type": "line",
+            "title": "Work Queue Add Rate",
+            "description": "",
+            "config": {
+              "show_legends": true,
+              "legends_position": "right",
+              "base_map": null,
+              "map_view": null
+            },
+            "queryType": "promql",
+            "queries": [
+              {
+                "query": "sum(rate(workqueue_adds_total{job=\"apiserver\", cluster=\"\"}[5m])) by (instance, name)",
+                "vrlFunctionQuery": null,
+                "customQuery": true,
+                "fields": {
+                  "stream": ":node_memory_MemAvailable_bytes:sum",
+                  "stream_type": "metrics",
+                  "x": [],
+                  "y": [],
+                  "z": [],
+                  "breakdown": [],
+                  "filter": {
+                    "filterType": "group",
+                    "logicalOperator": "AND",
+                    "conditions": []
+                  }
+                },
+                "config": {
+                  "promql_legend": "{name}"
+                }
+              }
+            ],
+            "layout": {
+              "x": 0,
+              "y": 36,
+              "w": 96,
+              "h": 12,
+              "i": 12
+            }
+          },
+          {
+            "id": "Panel_ID9050210",
+            "type": "line",
+            "title": "Work Queue Depth",
+            "description": "",
+            "config": {
+              "show_legends": true,
+              "legends_position": "right",
+              "base_map": null,
+              "map_view": null
+            },
+            "queryType": "promql",
+            "queries": [
+              {
+                "query": "sum(rate(workqueue_depth{job=\"apiserver\", cluster=\"\"}[5m])) by (instance, name)",
+                "vrlFunctionQuery": null,
+                "customQuery": true,
+                "fields": {
+                  "stream": ":node_memory_MemAvailable_bytes:sum",
+                  "stream_type": "metrics",
+                  "x": [],
+                  "y": [],
+                  "z": [],
+                  "breakdown": [],
+                  "filter": {
+                    "filterType": "group",
+                    "logicalOperator": "AND",
+                    "conditions": []
+                  }
+                },
+                "config": {
+                  "promql_legend": "{name}"
+                }
+              }
+            ],
+            "layout": {
+              "x": 96,
+              "y": 36,
+              "w": 96,
+              "h": 12,
+              "i": 13
+            }
+          },
+          {
+            "id": "Panel_ID5026610",
+            "type": "line",
+            "title": "Work Queue Latency",
+            "description": "",
+            "config": {
+              "show_legends": true,
+              "legends_position": "right",
+              "unit": "seconds",
+              "base_map": null,
+              "map_view": null
+            },
+            "queryType": "promql",
+            "queries": [
+              {
+                "query": "histogram_quantile(0.99, sum(rate(workqueue_queue_duration_seconds_bucket{job=\"apiserver\", cluster=\"\"}[5m])) by (instance, name, le))",
+                "vrlFunctionQuery": null,
+                "customQuery": true,
+                "fields": {
+                  "stream": ":node_memory_MemAvailable_bytes:sum",
+                  "stream_type": "metrics",
+                  "x": [],
+                  "y": [],
+                  "z": [],
+                  "breakdown": [],
+                  "filter": {
+                    "filterType": "group",
+                    "logicalOperator": "AND",
+                    "conditions": []
+                  }
+                },
+                "config": {
+                  "promql_legend": "{name}"
+                }
+              }
+            ],
+            "layout": {
+              "x": 0,
+              "y": 48,
+              "w": 96,
+              "h": 14,
+              "i": 14
+            }
+          },
+          {
+            "id": "Panel_ID2397310",
+            "type": "line",
+            "title": "Goroutines",
+            "description": "",
+            "config": {
+              "show_legends": true,
+              "legends_position": "right",
+              "base_map": null,
+              "map_view": null
+            },
+            "queryType": "promql",
+            "queries": [
+              {
+                "query": "go_goroutines{job=\"apiserver\", cluster=\"\"}",
+                "vrlFunctionQuery": null,
+                "customQuery": true,
+                "fields": {
+                  "stream": ":node_memory_MemAvailable_bytes:sum",
+                  "stream_type": "metrics",
+                  "x": [],
+                  "y": [],
+                  "z": [],
+                  "breakdown": [],
+                  "filter": {
+                    "filterType": "group",
+                    "logicalOperator": "AND",
+                    "conditions": []
+                  }
+                },
+                "config": {
+                  "promql_legend": "{job}"
+                }
+              }
+            ],
+            "layout": {
+              "x": 96,
+              "y": 48,
+              "w": 96,
+              "h": 14,
+              "i": 15
+            }
+          },
+          {
+            "id": "Panel_ID4655810",
+            "type": "line",
+            "title": "Memory",
+            "description": "",
+            "config": {
+              "show_legends": true,
+              "legends_position": "right",
+              "unit": "bytes",
+              "base_map": null,
+              "map_view": null
+            },
+            "queryType": "promql",
+            "queries": [
+              {
+                "query": "process_resident_memory_bytes{job=\"apiserver\", cluster=\"\"}",
+                "vrlFunctionQuery": null,
+                "customQuery": true,
+                "fields": {
+                  "stream": ":node_memory_MemAvailable_bytes:sum",
+                  "stream_type": "metrics",
+                  "x": [],
+                  "y": [],
+                  "z": [],
+                  "breakdown": [],
+                  "filter": {
+                    "filterType": "group",
+                    "logicalOperator": "AND",
+                    "conditions": []
+                  }
+                },
+                "config": {
+                  "promql_legend": "{instance}"
+                }
+              }
+            ],
+            "layout": {
+              "x": 0,
+              "y": 62,
+              "w": 96,
+              "h": 14,
+              "i": 16
+            }
+          },
+          {
+            "id": "Panel_ID1003310",
+            "type": "line",
+            "title": "CPU Usage",
+            "description": "",
+            "config": {
+              "show_legends": true,
+              "legends_position": "right",
+              "unit": "percent-1",
+              "base_map": null,
+              "map_view": null
+            },
+            "queryType": "promql",
+            "queries": [
+              {
+                "query": "rate(process_cpu_seconds_total{job=\"apiserver\", cluster=\"\"}[5m])",
+                "vrlFunctionQuery": null,
+                "customQuery": true,
+                "fields": {
+                  "stream": ":node_memory_MemAvailable_bytes:sum",
+                  "stream_type": "metrics",
+                  "x": [],
+                  "y": [],
+                  "z": [],
+                  "breakdown": [],
+                  "filter": {
+                    "filterType": "group",
+                    "logicalOperator": "AND",
+                    "conditions": []
+                  }
+                },
+                "config": {
+                  "promql_legend": "{instance}"
+                }
+              }
+            ],
+            "layout": {
+              "x": 96,
+              "y": 62,
+              "w": 96,
+              "h": 14,
+              "i": 17
+            }
+          }
+        ]
+      }
+    ],
+    "variables": {
+      "showDynamicFilters": false,
+      "list": []
+    }
+  },
+  {
+    "version": 8,
+    "dashboardId": "7514028784694067200",
+    "title": "Kubernetes / Compute Resources / Cluster",
+    "description": "",
+    "role": "",
+    "owner": "",
+    "created": "2026-10-08T18:27:46.297Z",
+    "tabs": [
+      {
+        "tabId": "default",
+        "name": "Default",
+        "panels": [
+          {
+            "id": "Panel_ID8159510",
+            "type": "metric",
+            "title": "CPU Utilisation",
+            "description": "",
+            "config": {
+              "show_legends": true,
+              "legends_position": null,
+              "unit": "custom",
+              "unit_custom": "%",
+              "base_map": null,
+              "map_view": null
+            },
+            "queryType": "promql",
+            "queries": [
+              {
+                "query": "cluster:node_cpu:ratio_rate5m{cluster=\"$cluster\"}*100",
+                "vrlFunctionQuery": null,
+                "customQuery": true,
+                "fields": {
+                  "stream": ":node_memory_MemAvailable_bytes:sum",
+                  "stream_type": "metrics",
+                  "x": [],
+                  "y": [],
+                  "z": [],
+                  "breakdown": [],
+                  "filter": {
+                    "filterType": "group",
+                    "logicalOperator": "AND",
+                    "conditions": []
+                  }
+                },
+                "config": {
+                  "promql_legend": ""
+                }
+              }
+            ],
+            "layout": {
+              "x": 0,
+              "y": 0,
+              "w": 32,
+              "h": 6,
+              "i": 1
+            }
+          },
+          {
+            "id": "Panel_ID7606710",
+            "type": "metric",
+            "title": "CPU Requests Commitment",
+            "description": "",
+            "config": {
+              "show_legends": true,
+              "legends_position": null,
+              "unit": "custom",
+              "unit_custom": "%",
+              "base_map": null,
+              "map_view": null
+            },
+            "queryType": "promql",
+            "queries": [
+              {
+                "query": "(sum(namespace_cpu:kube_pod_container_resource_requests:sum{cluster=\"$cluster\"}) / sum(kube_node_status_allocatable{job=\"kube-state-metrics\",resource=\"cpu\",cluster=\"$cluster\"}))*100",
+                "vrlFunctionQuery": null,
+                "customQuery": true,
+                "fields": {
+                  "stream": ":node_memory_MemAvailable_bytes:sum",
+                  "stream_type": "metrics",
+                  "x": [],
+                  "y": [],
+                  "z": [],
+                  "breakdown": [],
+                  "filter": {
+                    "filterType": "group",
+                    "logicalOperator": "AND",
+                    "conditions": []
+                  }
+                },
+                "config": {
+                  "promql_legend": ""
+                }
+              }
+            ],
+            "layout": {
+              "x": 32,
+              "y": 0,
+              "w": 32,
+              "h": 6,
+              "i": 2
+            }
+          },
+          {
+            "id": "Panel_ID4396310",
+            "type": "metric",
+            "title": "CPU Limits Commitment",
+            "description": "",
+            "config": {
+              "show_legends": true,
+              "legends_position": null,
+              "unit": "custom",
+              "unit_custom": "%",
+              "base_map": null,
+              "map_view": null
+            },
+            "queryType": "promql",
+            "queries": [
+              {
+                "query": "(sum(namespace_cpu:kube_pod_container_resource_limits:sum{cluster=\"$cluster\"}) / sum(kube_node_status_allocatable{job=\"kube-state-metrics\",resource=\"cpu\",cluster=\"$cluster\"}))*100",
+                "vrlFunctionQuery": null,
+                "customQuery": true,
+                "fields": {
+                  "stream": ":node_memory_MemAvailable_bytes:sum",
+                  "stream_type": "metrics",
+                  "x": [],
+                  "y": [],
+                  "z": [],
+                  "breakdown": [],
+                  "filter": {
+                    "filterType": "group",
+                    "logicalOperator": "AND",
+                    "conditions": []
+                  }
+                },
+                "config": {
+                  "promql_legend": ""
+                }
+              }
+            ],
+            "layout": {
+              "x": 64,
+              "y": 0,
+              "w": 32,
+              "h": 6,
+              "i": 3
+            }
+          },
+          {
+            "id": "Panel_ID9565210",
+            "type": "metric",
+            "title": "Memory Utilisation",
+            "description": "",
+            "config": {
+              "show_legends": true,
+              "legends_position": null,
+              "unit": "custom",
+              "unit_custom": "%",
+              "base_map": null,
+              "map_view": null
+            },
+            "queryType": "promql",
+            "queries": [
+              {
+                "query": "(1 - sum(:node_memory_MemAvailable_bytes:sum{cluster=\"$cluster\"}) / sum(node_memory_MemTotal_bytes{job=\"node-exporter\",cluster=\"$cluster\"}))*100",
+                "vrlFunctionQuery": null,
+                "customQuery": true,
+                "fields": {
+                  "stream": ":node_memory_MemAvailable_bytes:sum",
+                  "stream_type": "metrics",
+                  "x": [],
+                  "y": [],
+                  "z": [],
+                  "breakdown": [],
+                  "filter": {
+                    "filterType": "group",
+                    "logicalOperator": "AND",
+                    "conditions": []
+                  }
+                },
+                "config": {
+                  "promql_legend": ""
+                }
+              }
+            ],
+            "layout": {
+              "x": 96,
+              "y": 0,
+              "w": 32,
+              "h": 6,
+              "i": 4
+            }
+          },
+          {
+            "id": "Panel_ID9435810",
+            "type": "metric",
+            "title": "Memory Requests Commitment",
+            "description": "",
+            "config": {
+              "show_legends": true,
+              "legends_position": null,
+              "unit": "custom",
+              "unit_custom": "%",
+              "base_map": null,
+              "map_view": null
+            },
+            "queryType": "promql",
+            "queries": [
+              {
+                "query": "(sum(namespace_memory:kube_pod_container_resource_requests:sum{cluster=\"$cluster\"}) / sum(kube_node_status_allocatable{job=\"kube-state-metrics\",resource=\"memory\",cluster=\"$cluster\"}))*100",
+                "vrlFunctionQuery": null,
+                "customQuery": true,
+                "fields": {
+                  "stream": ":node_memory_MemAvailable_bytes:sum",
+                  "stream_type": "metrics",
+                  "x": [],
+                  "y": [],
+                  "z": [],
+                  "breakdown": [],
+                  "filter": {
+                    "filterType": "group",
+                    "logicalOperator": "AND",
+                    "conditions": []
+                  }
+                },
+                "config": {
+                  "promql_legend": ""
+                }
+              }
+            ],
+            "layout": {
+              "x": 128,
+              "y": 0,
+              "w": 32,
+              "h": 6,
+              "i": 5
+            }
+          },
+          {
+            "id": "Panel_ID5750710",
+            "type": "metric",
+            "title": "Memory Limits Commitment",
+            "description": "",
+            "config": {
+              "show_legends": true,
+              "legends_position": null,
+              "unit": "custom",
+              "unit_custom": "%",
+              "base_map": null,
+              "map_view": null
+            },
+            "queryType": "promql",
+            "queries": [
+              {
+                "query": "(sum(namespace_memory:kube_pod_container_resource_limits:sum{cluster=\"$cluster\"}) / sum(kube_node_status_allocatable{job=\"kube-state-metrics\",resource=\"memory\",cluster=\"$cluster\"}))*100",
+                "vrlFunctionQuery": null,
+                "customQuery": true,
+                "fields": {
+                  "stream": ":node_memory_MemAvailable_bytes:sum",
+                  "stream_type": "metrics",
+                  "x": [],
+                  "y": [],
+                  "z": [],
+                  "breakdown": [],
+                  "filter": {
+                    "filterType": "group",
+                    "logicalOperator": "AND",
+                    "conditions": []
+                  }
+                },
+                "config": {
+                  "promql_legend": ""
+                }
+              }
+            ],
+            "layout": {
+              "x": 160,
+              "y": 0,
+              "w": 32,
+              "h": 6,
+              "i": 6
+            }
+          },
+          {
+            "id": "Panel_ID4272010",
+            "type": "area-stacked",
+            "title": "CPU Usage",
+            "description": "",
+            "config": {
+              "show_legends": true,
+              "legends_position": "right",
+              "unit": "percent-1",
+              "base_map": null,
+              "map_view": null
+            },
+            "queryType": "promql",
+            "queries": [
+              {
+                "query": "sum(node_namespace_pod_container:container_cpu_usage_seconds_total:sum_irate{cluster=\"$cluster\"}) by (namespace)",
+                "vrlFunctionQuery": null,
+                "customQuery": true,
+                "fields": {
+                  "stream": ":node_memory_MemAvailable_bytes:sum",
+                  "stream_type": "metrics",
+                  "x": [],
+                  "y": [],
+                  "z": [],
+                  "breakdown": [],
+                  "filter": {
+                    "filterType": "group",
+                    "logicalOperator": "AND",
+                    "conditions": []
+                  }
+                },
+                "config": {
+                  "promql_legend": "{namespace}"
+                }
+              }
+            ],
+            "layout": {
+              "x": 0,
+              "y": 6,
+              "w": 96,
+              "h": 12,
+              "i": 7
+            }
+          },
+          {
+            "id": "Panel_ID5511010",
+            "type": "area-stacked",
+            "title": "Memory Usage (w/o cache)",
+            "description": "",
+            "config": {
+              "show_legends": true,
+              "legends_position": "right",
+              "unit": "bytes",
+              "base_map": null,
+              "map_view": null
+            },
+            "queryType": "promql",
+            "queries": [
+              {
+                "query": "sum(container_memory_rss{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", cluster=\"$cluster\", container!=\"\"}) by (namespace)",
+                "vrlFunctionQuery": null,
+                "customQuery": true,
+                "fields": {
+                  "stream": ":node_memory_MemAvailable_bytes:sum",
+                  "stream_type": "metrics",
+                  "x": [],
+                  "y": [],
+                  "z": [],
+                  "breakdown": [],
+                  "filter": {
+                    "filterType": "group",
+                    "logicalOperator": "AND",
+                    "conditions": []
+                  }
+                },
+                "config": {
+                  "promql_legend": "{namespace}"
+                }
+              }
+            ],
+            "layout": {
+              "x": 96,
+              "y": 6,
+              "w": 96,
+              "h": 12,
+              "i": 8
+            }
+          },
+          {
+            "id": "Panel_ID771610",
+            "type": "area-stacked",
+            "title": "Receive bandwidth",
+            "description": "",
+            "config": {
+              "show_legends": true,
+              "legends_position": "right",
+              "unit": "bps",
+              "base_map": null,
+              "map_view": null
+            },
+            "queryType": "promql",
+            "queries": [
+              {
+                "query": "sum(irate(container_network_receive_bytes_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", cluster=\"$cluster\", namespace=~\".+\"}[5m])) by (namespace)",
+                "vrlFunctionQuery": null,
+                "customQuery": true,
+                "fields": {
+                  "stream": ":node_memory_MemAvailable_bytes:sum",
+                  "stream_type": "metrics",
+                  "x": [],
+                  "y": [],
+                  "z": [],
+                  "breakdown": [],
+                  "filter": {
+                    "filterType": "group",
+                    "logicalOperator": "AND",
+                    "conditions": []
+                  }
+                },
+                "config": {
+                  "promql_legend": "{namespace}"
+                }
+              }
+            ],
+            "layout": {
+              "x": 0,
+              "y": 18,
+              "w": 96,
+              "h": 12,
+              "i": 9
+            }
+          },
+          {
+            "id": "Panel_ID6924510",
+            "type": "area-stacked",
+            "title": "Transmit Bandwidth",
+            "description": "",
+            "config": {
+              "show_legends": true,
+              "legends_position": "right",
+              "unit": "bps",
+              "base_map": null,
+              "map_view": null
+            },
+            "queryType": "promql",
+            "queries": [
+              {
+                "query": "sum(irate(container_network_transmit_bytes_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", cluster=\"$cluster\", namespace=~\".+\"}[5m])) by (namespace)",
+                "vrlFunctionQuery": null,
+                "customQuery": true,
+                "fields": {
+                  "stream": ":node_memory_MemAvailable_bytes:sum",
+                  "stream_type": "metrics",
+                  "x": [],
+                  "y": [],
+                  "z": [],
+                  "breakdown": [],
+                  "filter": {
+                    "filterType": "group",
+                    "logicalOperator": "AND",
+                    "conditions": []
+                  }
+                },
+                "config": {
+                  "promql_legend": "{namespace}"
+                }
+              }
+            ],
+            "layout": {
+              "x": 96,
+              "y": 18,
+              "w": 96,
+              "h": 12,
+              "i": 10
+            }
+          },
+          {
+            "id": "Panel_ID2296110",
+            "type": "area-stacked",
+            "title": "Average Container Bandwidth by Namespace: Received",
+            "description": "",
+            "config": {
+              "show_legends": true,
+              "legends_position": "right",
+              "unit": "bps",
+              "base_map": null,
+              "map_view": null
+            },
+            "queryType": "promql",
+            "queries": [
+              {
+                "query": "avg(irate(container_network_receive_bytes_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", cluster=\"$cluster\", namespace=~\".+\"}[5m])) by (namespace)",
+                "vrlFunctionQuery": null,
+                "customQuery": true,
+                "fields": {
+                  "stream": ":node_memory_MemAvailable_bytes:sum",
+                  "stream_type": "metrics",
+                  "x": [],
+                  "y": [],
+                  "z": [],
+                  "breakdown": [],
+                  "filter": {
+                    "filterType": "group",
+                    "logicalOperator": "AND",
+                    "conditions": []
+                  }
+                },
+                "config": {
+                  "promql_legend": "{namespace}"
+                }
+              }
+            ],
+            "layout": {
+              "x": 0,
+              "y": 30,
+              "w": 96,
+              "h": 12,
+              "i": 11
+            }
+          },
+          {
+            "id": "Panel_ID2428510",
+            "type": "area-stacked",
+            "title": "Average Container Bandwidth by Namespace: Transmitted",
+            "description": "",
+            "config": {
+              "show_legends": true,
+              "legends_position": "right",
+              "unit": "bps",
+              "base_map": null,
+              "map_view": null
+            },
+            "queryType": "promql",
+            "queries": [
+              {
+                "query": "avg(irate(container_network_transmit_bytes_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", cluster=\"$cluster\", namespace=~\".+\"}[5m])) by (namespace)",
+                "vrlFunctionQuery": null,
+                "customQuery": true,
+                "fields": {
+                  "stream": ":node_memory_MemAvailable_bytes:sum",
+                  "stream_type": "metrics",
+                  "x": [],
+                  "y": [],
+                  "z": [],
+                  "breakdown": [],
+                  "filter": {
+                    "filterType": "group",
+                    "logicalOperator": "AND",
+                    "conditions": []
+                  }
+                },
+                "config": {
+                  "promql_legend": "{namespace}"
+                }
+              }
+            ],
+            "layout": {
+              "x": 96,
+              "y": 30,
+              "w": 96,
+              "h": 12,
+              "i": 12
+            }
+          },
+          {
+            "id": "Panel_ID2704410",
+            "type": "area-stacked",
+            "title": "Rate of Received Packets",
+            "description": "",
+            "config": {
+              "show_legends": true,
+              "legends_position": "right",
+              "base_map": null,
+              "map_view": null
+            },
+            "queryType": "promql",
+            "queries": [
+              {
+                "query": "sum(irate(container_network_receive_packets_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", cluster=\"$cluster\", namespace=~\".+\"}[5m])) by (namespace)",
+                "vrlFunctionQuery": null,
+                "customQuery": true,
+                "fields": {
+                  "stream": ":node_memory_MemAvailable_bytes:sum",
+                  "stream_type": "metrics",
+                  "x": [],
+                  "y": [],
+                  "z": [],
+                  "breakdown": [],
+                  "filter": {
+                    "filterType": "group",
+                    "logicalOperator": "AND",
+                    "conditions": []
+                  }
+                },
+                "config": {
+                  "promql_legend": "{namespace}"
+                }
+              }
+            ],
+            "layout": {
+              "x": 0,
+              "y": 42,
+              "w": 96,
+              "h": 14,
+              "i": 13
+            }
+          },
+          {
+            "id": "Panel_ID8108710",
+            "type": "area-stacked",
+            "title": "Rate of Transmitted Packets",
+            "description": "",
+            "config": {
+              "show_legends": true,
+              "legends_position": "right",
+              "base_map": null,
+              "map_view": null
+            },
+            "queryType": "promql",
+            "queries": [
+              {
+                "query": "sum(irate(container_network_transmit_packets_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", cluster=\"$cluster\", namespace=~\".+\"}[5m])) by (namespace)",
+                "vrlFunctionQuery": null,
+                "customQuery": true,
+                "fields": {
+                  "stream": ":node_memory_MemAvailable_bytes:sum",
+                  "stream_type": "metrics",
+                  "x": [],
+                  "y": [],
+                  "z": [],
+                  "breakdown": [],
+                  "filter": {
+                    "filterType": "group",
+                    "logicalOperator": "AND",
+                    "conditions": []
+                  }
+                },
+                "config": {
+                  "promql_legend": "{namespace}"
+                }
+              }
+            ],
+            "layout": {
+              "x": 96,
+              "y": 42,
+              "w": 96,
+              "h": 14,
+              "i": 14
+            }
+          },
+          {
+            "id": "Panel_ID992010",
+            "type": "area-stacked",
+            "title": "Rate of Received Packets Dropped",
+            "description": "",
+            "config": {
+              "show_legends": true,
+              "legends_position": "right",
+              "base_map": null,
+              "map_view": null
+            },
+            "queryType": "promql",
+            "queries": [
+              {
+                "query": "sum(irate(container_network_receive_packets_dropped_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", cluster=\"$cluster\", namespace=~\".+\"}[5m])) by (namespace)",
+                "vrlFunctionQuery": null,
+                "customQuery": true,
+                "fields": {
+                  "stream": ":node_memory_MemAvailable_bytes:sum",
+                  "stream_type": "metrics",
+                  "x": [],
+                  "y": [],
+                  "z": [],
+                  "breakdown": [],
+                  "filter": {
+                    "filterType": "group",
+                    "logicalOperator": "AND",
+                    "conditions": []
+                  }
+                },
+                "config": {
+                  "promql_legend": "{namespace}"
+                }
+              }
+            ],
+            "layout": {
+              "x": 0,
+              "y": 56,
+              "w": 96,
+              "h": 12,
+              "i": 15
+            }
+          },
+          {
+            "id": "Panel_ID1443510",
+            "type": "area-stacked",
+            "title": "Rate of Transmitted Packets Dropped",
+            "description": "",
+            "config": {
+              "show_legends": true,
+              "legends_position": "right",
+              "base_map": null,
+              "map_view": null
+            },
+            "queryType": "promql",
+            "queries": [
+              {
+                "query": "sum(irate(container_network_transmit_packets_dropped_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", cluster=\"$cluster\", namespace=~\".+\"}[5m])) by (namespace)",
+                "vrlFunctionQuery": null,
+                "customQuery": true,
+                "fields": {
+                  "stream": ":node_memory_MemAvailable_bytes:sum",
+                  "stream_type": "metrics",
+                  "x": [],
+                  "y": [],
+                  "z": [],
+                  "breakdown": [],
+                  "filter": {
+                    "filterType": "group",
+                    "logicalOperator": "AND",
+                    "conditions": []
+                  }
+                },
+                "config": {
+                  "promql_legend": "{namespace}"
+                }
+              }
+            ],
+            "layout": {
+              "x": 96,
+              "y": 56,
+              "w": 96,
+              "h": 12,
+              "i": 16
+            }
+          },
+          {
+            "id": "Panel_ID7028310",
+            "type": "area-stacked",
+            "title": "IOPS(Reads+Writes)",
+            "description": "",
+            "config": {
+              "show_legends": true,
+              "legends_position": "right",
+              "base_map": null,
+              "map_view": null
+            },
+            "queryType": "promql",
+            "queries": [
+              {
+                "query": "ceil(sum by(namespace) (rate(container_fs_reads_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", container!=\"\", device=~\"(/dev/)?(mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|md.+|dasd.+)\", cluster=\"$cluster\", namespace!=\"\"}[5m]) + rate(container_fs_writes_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", container!=\"\", cluster=\"$cluster\", namespace!=\"\"}[5m])))",
+                "vrlFunctionQuery": null,
+                "customQuery": true,
+                "fields": {
+                  "stream": ":node_memory_MemAvailable_bytes:sum",
+                  "stream_type": "metrics",
+                  "x": [],
+                  "y": [],
+                  "z": [],
+                  "breakdown": [],
+                  "filter": {
+                    "filterType": "group",
+                    "logicalOperator": "AND",
+                    "conditions": []
+                  }
+                },
+                "config": {
+                  "promql_legend": "{namespace}"
+                }
+              }
+            ],
+            "layout": {
+              "x": 0,
+              "y": 68,
+              "w": 96,
+              "h": 14,
+              "i": 17
+            }
+          },
+          {
+            "id": "Panel_ID2193110",
+            "type": "area-stacked",
+            "title": "ThroughPut(Read+Write)",
+            "description": "",
+            "config": {
+              "show_legends": true,
+              "legends_position": null,
+              "unit": "bps",
+              "base_map": null,
+              "map_view": null
+            },
+            "queryType": "promql",
+            "queries": [
+              {
+                "query": "sum by(namespace) (rate(container_fs_reads_bytes_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", container!=\"\", device=~\"(/dev/)?(mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|md.+|dasd.+)\", cluster=\"$cluster\", namespace!=\"\"}[5m]) + rate(container_fs_writes_bytes_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", container!=\"\", cluster=\"$cluster\", namespace!=\"\"}[5m]))",
+                "vrlFunctionQuery": null,
+                "customQuery": true,
+                "fields": {
+                  "stream": ":node_memory_MemAvailable_bytes:sum",
+                  "stream_type": "metrics",
+                  "x": [],
+                  "y": [],
+                  "z": [],
+                  "breakdown": [],
+                  "filter": {
+                    "filterType": "group",
+                    "logicalOperator": "AND",
+                    "conditions": []
+                  }
+                },
+                "config": {
+                  "promql_legend": ""
+                }
+              }
+            ],
+            "layout": {
+              "x": 96,
+              "y": 68,
+              "w": 96,
+              "h": 14,
+              "i": 18
+            }
+          }
+        ]
+      }
+    ],
+    "variables": {
+      "showDynamicFilters": false,
+      "list": []
+    }
+  }
+]

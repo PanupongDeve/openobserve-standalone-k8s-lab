@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html lang="th" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenObserve Standalone on Kubernetes Lab & Infrastructure Monitoring</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --paper: #f7f7f8;
+      --paper-card: #ffffff;
+      --paper-elevated: #f0f1f4;
+      --ink: #1f2328;
+      --ink-secondary: #57606a;
+      --muted: #6e7781;
+      --rule: rgba(31, 35, 40, 0.12);
+      --rule-solid: #e1e4e8;
+      --accent: #eb6c36;
+      --accent-tint: rgba(235, 108, 54, 0.08);
+      --accent-hover: #d95822;
+      --link: #0969da;
+      --link-tint: rgba(9, 105, 218, 0.08);
+      --success: #1a7f37;
+      --success-tint: rgba(26, 127, 55, 0.1);
+      --code-bg: #1f2328;
+      --code-text: #e6edf3;
+      --radius-sm: 4px;
+      --radius-md: 6px;
+      --radius-lg: 10px;
+      --shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+      --transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    [data-theme="dark"] {
+      --paper: #0e1117;
+      --paper-card: #161b22;
+      --paper-elevated: #21262d;
+      --ink: #e6edf3;
+      --ink-secondary: #8b949e;
+      --muted: #7d8590;
+      --rule: rgba(240, 246, 252, 0.14);
+      --rule-solid: #30363d;
+      --accent: #f0883e;
+      --accent-tint: rgba(240, 136, 62, 0.15);
+      --accent-hover: #fa9b55;
+      --link: #58a6ff;
+      --link-tint: rgba(88, 166, 255, 0.15);
+      --success: #3fb950;
+      --success-tint: rgba(63, 185, 80, 0.15);
+      --code-bg: #0d1117;
+      --code-text: #c9d1d9;
+      --shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.4);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--paper);
+      color: var(--ink);
+      font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      line-height: 1.6;
+      font-size: 15px;
+      letter-spacing: -0.01em;
+      transition: background-color 0.25s ease, color 0.25s ease;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Top Navigation & Header Bar */
+    .top-bar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--paper);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--rule);
+      padding: 0.75rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-badge {
+      font-family: 'Geist Mono', monospace;
+      font-size: 11px;
+      font-weight: 600;
+      background: var(--accent-tint);
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      padding: 2px 8px;
+      border-radius: var(--radius-sm);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .brand-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1.25rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--ink-secondary);
+      font-size: 13px;
+      font-weight: 500;
+      transition: var(--transition);
+    }
+
+    .nav-links a:hover {
+      color: var(--accent);
+    }
+
+    .theme-toggle-btn {
+      background: var(--paper-card);
+      border: 1px solid var(--rule);
+      color: var(--ink);
+      padding: 6px 12px;
+      border-radius: var(--radius-md);
+      font-size: 13px;
+      font-family: 'Geist', sans-serif;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: var(--transition);
+    }
+
+    .theme-toggle-btn:hover {
+      border-color: var(--ink-secondary);
+      background: var(--paper-elevated);
+    }
+
+    /* Container Layout */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem 5rem 1.5rem;
+    }
+
+    /* Hero Section */
+    .hero {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--rule);
+      padding-bottom: 2rem;
+    }
+
+    .hero-eyebrow {
+      font-family: 'Geist Mono', monospace;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--accent);
+      margin-bottom: 0.75rem;
+      font-weight: 600;
+    }
+
+    .hero-title {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-size: 2.75rem;
+      line-height: 1.15;
+      font-weight: 400;
+      color: var(--ink);
+      margin-bottom: 1rem;
+    }
+
+    .hero-lead {
+      font-size: 16px;
+      color: var(--ink-secondary);
+      max-width: 950px;
+      line-height: 1.65;
+    }
+
+    /* Diagram Section & Interactive Controls */
+    .diagram-section {
+      margin-bottom: 3.5rem;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .section-eyebrow {
+      font-family: 'Geist Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .section-title {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-size: 2rem;
+      font-weight: 400;
+      color: var(--ink);
+    }
+
+    .diagram-controls {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      background: var(--paper-card);
+      border: 1px solid var(--rule);
+      padding: 4px;
+      border-radius: var(--radius-md);
+    }
+
+    .filter-btn {
+      background: transparent;
+      border: none;
+      color: var(--ink-secondary);
+      font-size: 12px;
+      font-family: 'Geist', sans-serif;
+      font-weight: 500;
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .filter-btn:hover {
+      color: var(--ink);
+      background: var(--paper-elevated);
+    }
+
+    .filter-btn.active {
+      background: var(--accent);
+      color: #ffffff;
+      font-weight: 600;
+    }
+
+    .diagram-frame {
+      background: var(--paper-card);
+      border: 1px solid var(--rule-solid);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      overflow-x: auto;
+      box-shadow: var(--shadow-subtle);
+    }
+
+    .diagram-frame svg {
+      display: block;
+      width: 100%;
+      height: auto;
+      min-width: 900px;
+    }
+
+    /* SVG Diagram Styles */
+    .node-box {
+      transition: opacity 0.3s ease, stroke-width 0.2s ease, transform 0.2s ease;
+    }
+
+    .flow-line {
+      transition: stroke-width 0.2s ease, opacity 0.3s ease, stroke 0.2s ease;
+    }
+
+    .flow-line.dimmed, .node-box.dimmed {
+      opacity: 0.18 !important;
+    }
+
+    .flow-line.highlighted {
+      stroke-width: 2.5px !important;
+      opacity: 1 !important;
+    }
+
+    /* Summary Cards Grid */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 1fr 0.95fr;
+      gap: 1.25rem;
+      margin-bottom: 3.5rem;
+    }
+
+    @media (max-width: 960px) {
+      .cards-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: var(--paper-card);
+      border: 1px solid var(--rule);
+      border-radius: var(--radius-md);
+      padding: 1.35rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: var(--transition);
+    }
+
+    .card:hover {
+      border-color: var(--rule-solid);
+      box-shadow: var(--shadow-subtle);
+    }
+
+    .card-eyebrow {
+      font-family: 'Geist Mono', monospace;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 0.85rem;
+    }
+
+    .card-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .dot-coral { background: var(--accent); }
+    .dot-blue { background: var(--link); }
+    .dot-green { background: var(--success); }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .card-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      font-size: 13.5px;
+      color: var(--ink-secondary);
+    }
+
+    .card-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+      line-height: 1.45;
+    }
+
+    .card-list li::before {
+      content: "—";
+      color: var(--muted);
+      font-family: 'Geist Mono', monospace;
+    }
+
+    .card-list strong {
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    /* Table Styles */
+    .table-section {
+      margin-bottom: 3.5rem;
+    }
+
+    .custom-table-container {
+      background: var(--paper-card);
+      border: 1px solid var(--rule-solid);
+      border-radius: var(--radius-md);
+      overflow-x: auto;
+      box-shadow: var(--shadow-subtle);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 13.5px;
+    }
+
+    th {
+      background: var(--paper-elevated);
+      color: var(--ink-secondary);
+      font-family: 'Geist Mono', monospace;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--rule-solid);
+    }
+
+    td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--rule);
+      color: var(--ink);
+      vertical-align: middle;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: var(--paper-elevated);
+    }
+
+    .code-pill {
+      font-family: 'Geist Mono', monospace;
+      font-size: 12px;
+      background: var(--paper-elevated);
+      color: var(--ink);
+      padding: 2px 6px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--rule);
+    }
+
+    .badge-accent {
+      font-family: 'Geist Mono', monospace;
+      font-size: 11px;
+      background: var(--accent-tint);
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      padding: 2px 7px;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+    }
+
+    .badge-green {
+      font-family: 'Geist Mono', monospace;
+      font-size: 11px;
+      background: var(--success-tint);
+      color: var(--success);
+      border: 1px solid var(--success);
+      padding: 2px 7px;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+    }
+
+    /* Code Blocks & Quickstart Section */
+    .quickstart-section {
+      margin-bottom: 3.5rem;
+    }
+
+    .grid-2col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 860px) {
+      .grid-2col {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .step-card {
+      background: var(--paper-card);
+      border: 1px solid var(--rule-solid);
+      border-radius: var(--radius-md);
+      padding: 1.35rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .step-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+    }
+
+    .step-num {
+      font-family: 'Geist Mono', monospace;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--accent);
+      background: var(--accent-tint);
+      padding: 2px 8px;
+      border-radius: var(--radius-sm);
+    }
+
+    .step-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .step-desc {
+      font-size: 13.5px;
+      color: var(--ink-secondary);
+      margin-bottom: 1rem;
+      line-height: 1.5;
+    }
+
+    .code-terminal {
+      background: var(--code-bg);
+      color: var(--code-text);
+      border-radius: var(--radius-sm);
+      padding: 0.75rem 1rem;
+      font-family: 'Geist Mono', monospace;
+      font-size: 12.5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .code-terminal code {
+      color: #79c0ff;
+    }
+
+    .copy-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: #c9d1d9;
+      padding: 4px 8px;
+      border-radius: var(--radius-sm);
+      font-size: 11px;
+      cursor: pointer;
+      font-family: 'Geist Mono', monospace;
+      transition: var(--transition);
+    }
+
+    .copy-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+    }
+
+    /* Test Suite Interactive Tabs */
+    .test-suite-section {
+      margin-bottom: 3.5rem;
+    }
+
+    .test-card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1rem;
+    }
+
+    .test-item {
+      background: var(--paper-card);
+      border: 1px solid var(--rule);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      transition: var(--transition);
+    }
+
+    .test-item:hover {
+      border-color: var(--link);
+      background: var(--paper-elevated);
+    }
+
+    .test-badge-line {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .test-filename {
+      font-family: 'Geist Mono', monospace;
+      font-size: 12px;
+      color: var(--link);
+      font-weight: 600;
+    }
+
+    .test-title {
+      font-size: 14.5px;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 0.35rem;
+    }
+
+    .test-desc {
+      font-size: 13px;
+      color: var(--ink-secondary);
+      line-height: 1.45;
+    }
+
+    /* Cleanup Section */
+    .cleanup-box {
+      background: var(--paper-card);
+      border-left: 3px solid var(--accent);
+      border-top: 1px solid var(--rule);
+      border-right: 1px solid var(--rule);
+      border-bottom: 1px solid var(--rule);
+      border-radius: var(--radius-md);
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 4rem;
+    }
+
+    .cleanup-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 0.5rem;
+    }
+
+    .cleanup-desc {
+      font-size: 13.5px;
+      color: var(--ink-secondary);
+      margin-bottom: 1rem;
+    }
+
+    /* Footer Colophon */
+    footer {
+      border-top: 1px solid var(--rule);
+      padding-top: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: var(--muted);
+      font-family: 'Geist Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Header Navigation -->
+  <header class="top-bar">
+    <div class="brand-group">
+      <span class="brand-badge">K8s Lab</span>
+      <span class="brand-title">OpenObserve Standalone</span>
+    </div>
+    <div class="nav-actions">
+      <ul class="nav-links">
+        <li><a href="#architecture">สถาปัตยกรรม</a></li>
+        <li><a href="#quickstart">การติดตั้ง</a></li>
+        <li><a href="#credentials">ข้อมูลการเข้าถึง</a></li>
+        <li><a href="#test-suite">ชุดการทดสอบ</a></li>
+      </ul>
+      <button class="theme-toggle-btn" id="themeToggle" onclick="toggleTheme()" aria-label="Toggle dark mode">
+        <span id="themeIcon">☀️</span> <span id="themeText">Light</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="hero-eyebrow">Enterprise Observability Lab Environment</div>
+      <h1 class="hero-title">OpenObserve Standalone on Kubernetes</h1>
+      <p class="hero-lead">
+        ระบบ Observability รวมศูนย์สำหรับเก็บ <strong>Metrics</strong> และ <strong>Container Logs</strong> แบบครบวงจรบน Kubernetes 
+        ใช้ <strong>kube-prometheus-stack (Agent Mode)</strong> ยิง Remote Write ตรงเข้า OpenObserve พร้อม <strong>OpenTelemetry Collector DaemonSet</strong> 
+        อ่านล็อกระดับ Pod อัตโนมัติ จัดเก็บถาวรด้วยไฟล์ Parquet บน <strong>MinIO S3</strong> 
+        พร้อมนโยบาย Data Retention และชุดทดสอบความทนทาน (Resilience Verification)
+      </p>
+    </section>
+
+    <!-- Architecture Diagram Section -->
+    <section class="diagram-section" id="architecture">
+      <div class="section-header">
+        <div>
+          <div class="section-eyebrow">Visual Architecture & Data Pipelines</div>
+          <h2 class="section-title">โครงสร้างการทำงานและเส้นทางข้อมูล</h2>
+        </div>
+        <div class="diagram-controls">
+          <button class="filter-btn active" onclick="filterFlow('all', this)">ทั้งหมด (Overview)</button>
+          <button class="filter-btn" onclick="filterFlow('metrics', this)">Metrics Pipeline</button>
+          <button class="filter-btn" onclick="filterFlow('logs', this)">Logs Pipeline</button>
+          <button class="filter-btn" onclick="filterFlow('storage', this)">Storage Layer</button>
+        </div>
+      </div>
+
+      <div class="diagram-frame">
+        <!-- Inline SVG Architecture Diagram conforming strictly to diagram-design -->
+        <svg viewBox="0 0 1080 620" width="100%" height="auto" role="img" aria-labelledby="oo-arch-title oo-arch-desc">
+          <title id="oo-arch-title">OpenObserve Standalone Architecture on Kubernetes</title>
+          <desc id="oo-arch-desc">High-level architecture showing Metrics scraping from Node/Kubelet, Container Logs collection via OTel Collector DaemonSet, ingestion into OpenObserve Standalone Pod, and persistence to MinIO S3 and SQLite PVC.</desc>
+          
+          <defs>
+            <!-- Marker Definitions -->
+            <marker id="arrow-muted" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+              <polygon points="0 0, 8 3, 0 6" fill="#6e7781"/>
+            </marker>
+            <marker id="arrow-coral" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+              <polygon points="0 0, 8 3, 0 6" fill="#eb6c36"/>
+            </marker>
+            <marker id="arrow-blue" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+              <polygon points="0 0, 8 3, 0 6" fill="#0969da"/>
+            </marker>
+            <marker id="arrow-green" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+              <polygon points="0 0, 8 3, 0 6" fill="#1a7f37"/>
+            </marker>
+          </defs>
+
+          <!-- Outer Canvas / Container Zone -->
+          <rect x="16" y="16" width="1048" height="528" rx="8" fill="var(--paper-elevated)" stroke="var(--rule)" stroke-width="1"/>
+          <text x="36" y="44" fill="var(--muted)" font-size="11" font-family="'Geist Mono', monospace" letter-spacing="0.1em" font-weight="600">KUBERNETES CLUSTER (NAMESPACE: OPENOBSERVE)</text>
+
+          <!-- Zone 1: Metrics Sources Group -->
+          <rect x="36" y="64" width="468" height="96" rx="6" fill="var(--paper-card)" stroke="var(--rule)" stroke-width="1"/>
+          <text x="48" y="84" fill="var(--muted)" font-size="9" font-family="'Geist Mono', monospace" letter-spacing="0.08em">SOURCE: METRICS SCRAPING</text>
+          
+          <!-- Node: node-exporter -->
+          <g class="node-box" data-flow="metrics">
+            <rect x="48" y="96" width="136" height="52" rx="4" fill="var(--paper)" stroke="var(--rule-solid)" stroke-width="1"/>
+            <text x="116" y="118" fill="var(--ink)" font-size="11" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">node-exporter</text>
+            <text x="116" y="134" fill="var(--muted)" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">Host CPU / RAM / Disk</text>
+          </g>
+
+          <!-- Node: kubelet / cAdvisor -->
+          <g class="node-box" data-flow="metrics">
+            <rect x="200" y="96" width="144" height="52" rx="4" fill="var(--paper)" stroke="var(--rule-solid)" stroke-width="1"/>
+            <text x="272" y="118" fill="var(--ink)" font-size="11" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">kubelet / cAdvisor</text>
+            <text x="272" y="134" fill="var(--muted)" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">Container Usage / Throttle</text>
+          </g>
+
+          <!-- Node: kube-state-metrics -->
+          <g class="node-box" data-flow="metrics">
+            <rect x="360" y="96" width="132" height="52" rx="4" fill="var(--paper)" stroke="var(--rule-solid)" stroke-width="1"/>
+            <text x="426" y="118" fill="var(--ink)" font-size="11" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">kube-state-metrics</text>
+            <text x="426" y="134" fill="var(--muted)" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">Pod / Workload State</text>
+          </g>
+
+          <!-- Zone 2: Logs Source Group -->
+          <rect x="548" y="64" width="496" height="96" rx="6" fill="var(--paper-card)" stroke="var(--rule)" stroke-width="1"/>
+          <text x="560" y="84" fill="var(--muted)" font-size="9" font-family="'Geist Mono', monospace" letter-spacing="0.08em">SOURCE: CONTAINER LOG FILES</text>
+          
+          <!-- Node: Pod Log Files -->
+          <g class="node-box" data-flow="logs">
+            <rect x="560" y="96" width="472" height="52" rx="4" fill="var(--paper)" stroke="var(--rule-solid)" stroke-width="1"/>
+            <text x="796" y="118" fill="var(--ink)" font-size="11" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Container Log Mounts</text>
+            <text x="796" y="134" fill="var(--muted)" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">/var/log/pods/*/*/*.log + /var/lib/docker/containers</text>
+          </g>
+
+          <!-- Middle Layer: Collectors -->
+          <!-- Node: Prometheus Agent Mode -->
+          <g class="node-box" data-flow="metrics">
+            <rect x="136" y="208" width="272" height="68" rx="6" fill="var(--paper-card)" stroke="var(--link)" stroke-width="1.2"/>
+            <rect x="144" y="214" width="76" height="14" rx="2" fill="var(--link-tint)" stroke="var(--link)" stroke-width="0.8"/>
+            <text x="182" y="224" fill="var(--link)" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" font-weight="600">SCRAPER AGENT</text>
+            <text x="272" y="246" fill="var(--ink)" font-size="13" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Prometheus (Agent Mode)</text>
+            <text x="272" y="262" fill="var(--muted)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">kube-prometheus-stack / In-memory buffer</text>
+          </g>
+
+          <!-- Node: OTel Collector DaemonSet -->
+          <g class="node-box" data-flow="logs">
+            <rect x="640" y="208" width="312" height="68" rx="6" fill="var(--paper-card)" stroke="var(--success)" stroke-width="1.2"/>
+            <rect x="648" y="214" width="90" height="14" rx="2" fill="var(--success-tint)" stroke="var(--success)" stroke-width="0.8"/>
+            <text x="693" y="224" fill="var(--success)" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" font-weight="600">OTEL DAEMONSET</text>
+            <text x="796" y="246" fill="var(--ink)" font-size="13" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">OpenTelemetry Collector</text>
+            <text x="796" y="262" fill="var(--muted)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">filelog receiver + k8sattributes processor</text>
+          </g>
+
+          <!-- Core Engine: OpenObserve Standalone (Focal Node) -->
+          <g class="node-box" data-flow="all">
+            <rect x="220" y="324" width="640" height="96" rx="8" fill="var(--accent-tint)" stroke="var(--accent)" stroke-width="1.5"/>
+            <rect x="232" y="334" width="136" height="16" rx="2" fill="var(--accent)" stroke="none"/>
+            <text x="300" y="345" fill="#ffffff" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" font-weight="600">CORE ENGINE (ROLE: ALL)</text>
+            <text x="540" y="366" fill="var(--ink)" font-size="16" font-weight="700" font-family="'Geist', sans-serif" text-anchor="middle">OpenObserve Standalone Pod</text>
+            <text x="540" y="386" fill="var(--ink-secondary)" font-size="11" font-family="'Geist', sans-serif" text-anchor="middle">Ingester Engine • PromQL / Log Search Engine • Automated Compactor</text>
+            <text x="540" y="404" fill="var(--accent)" font-size="9.5" font-family="'Geist Mono', monospace" text-anchor="middle">Data Retention: 1 Day (24h) | Compactor Interval: 300s (5m)</text>
+          </g>
+
+          <!-- Bottom Layer: Storage Backends -->
+          <!-- Node: SQLite Metadata -->
+          <g class="node-box" data-flow="storage">
+            <rect x="256" y="468" width="248" height="60" rx="6" fill="var(--paper-card)" stroke="var(--rule-solid)" stroke-width="1.2"/>
+            <text x="380" y="492" fill="var(--ink)" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">SQLite Storage (PVC 10Gi)</text>
+            <text x="380" y="510" fill="var(--muted)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">Metadata, Users, Stream Catalog, WAL</text>
+          </g>
+
+          <!-- Node: MinIO S3 Storage -->
+          <g class="node-box" data-flow="storage">
+            <rect x="576" y="468" width="248" height="60" rx="6" fill="var(--paper-card)" stroke="var(--rule-solid)" stroke-width="1.2"/>
+            <text x="700" y="492" fill="var(--ink)" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">MinIO S3 Bucket (20Gi)</text>
+            <text x="700" y="510" fill="var(--muted)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">Persistent Parquet Files (Logs &amp; Metrics)</text>
+          </g>
+
+          <!-- Connectors & Arrows (Orthogonal Paths with r=8 elbows) -->
+          <!-- Metrics Scraping: Sources to Prometheus -->
+          <path class="flow-line" data-flow="metrics" d="M 116 148 L 116 172 Q 116 180 124 180 L 220 180 Q 228 180 228 188 L 228 208" fill="none" stroke="#0969da" stroke-width="1.2" marker-end="url(#arrow-blue)"/>
+          <path class="flow-line" data-flow="metrics" d="M 272 148 L 272 208" fill="none" stroke="#0969da" stroke-width="1.2" marker-end="url(#arrow-blue)"/>
+          <path class="flow-line" data-flow="metrics" d="M 426 148 L 426 172 Q 426 180 418 180 L 324 180 Q 316 180 316 188 L 316 208" fill="none" stroke="#0969da" stroke-width="1.2" marker-end="url(#arrow-blue)"/>
+          
+          <!-- Scraping Label -->
+          <rect x="240" y="166" width="64" height="14" rx="2" fill="var(--paper)" stroke="none"/>
+          <text x="272" y="176" fill="#0969da" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" font-weight="600">SCRAPE</text>
+
+          <!-- Logs Collection: Mounts to OTel Collector -->
+          <path class="flow-line" data-flow="logs" d="M 796 148 L 796 208" fill="none" stroke="#1a7f37" stroke-width="1.2" marker-end="url(#arrow-green)"/>
+          <rect x="760" y="168" width="72" height="14" rx="2" fill="var(--paper)" stroke="none"/>
+          <text x="796" y="178" fill="#1a7f37" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" font-weight="600">FILELOG</text>
+
+          <!-- Pipeline to Core Engine: Prometheus Remote Write -->
+          <path class="flow-line" data-flow="metrics" d="M 272 276 L 272 296 Q 272 304 280 304 L 380 304 Q 388 304 388 312 L 388 324" fill="none" stroke="#0969da" stroke-width="1.4" marker-end="url(#arrow-blue)"/>
+          <rect x="296" y="294" width="112" height="14" rx="2" fill="var(--paper)" stroke="none"/>
+          <text x="352" y="304" fill="#0969da" font-size="7.5" font-family="'Geist Mono', monospace" text-anchor="middle" font-weight="600">REMOTE WRITE (/v1/write)</text>
+
+          <!-- Pipeline to Core Engine: OTel OTLP HTTP -->
+          <path class="flow-line" data-flow="logs" d="M 796 276 L 796 296 Q 796 304 788 304 L 692 304 Q 684 304 684 312 L 684 324" fill="none" stroke="#1a7f37" stroke-width="1.4" marker-end="url(#arrow-green)"/>
+          <rect x="670" y="294" width="124" height="14" rx="2" fill="var(--paper)" stroke="none"/>
+          <text x="732" y="304" fill="#1a7f37" font-size="7.5" font-family="'Geist Mono', monospace" text-anchor="middle" font-weight="600">OTLP HTTP (STREAM: k8s_logs)</text>
+
+          <!-- Core Engine to Storage -->
+          <!-- SQLite -->
+          <path class="flow-line" data-flow="storage" d="M 380 420 L 380 468" fill="none" stroke="var(--ink-secondary)" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#arrow-muted)"/>
+          <rect x="336" y="436" width="88" height="14" rx="2" fill="var(--paper)" stroke="none"/>
+          <text x="380" y="446" fill="var(--ink-secondary)" font-size="7.5" font-family="'Geist Mono', monospace" text-anchor="middle">METADATA SYNC</text>
+
+          <!-- MinIO -->
+          <path class="flow-line" data-flow="storage" d="M 700 420 L 700 468" fill="none" stroke="#eb6c36" stroke-width="1.4" marker-end="url(#arrow-coral)"/>
+          <rect x="640" y="436" width="120" height="14" rx="2" fill="var(--paper)" stroke="none"/>
+          <text x="700" y="446" fill="#eb6c36" font-size="7.5" font-family="'Geist Mono', monospace" text-anchor="middle" font-weight="600">PARQUET BATCH FLUSH</text>
+
+          <!-- Legend Strip -->
+          <line x1="36" y1="568" x2="1044" y2="568" stroke="var(--rule)" stroke-width="0.8"/>
+          <text x="36" y="592" fill="var(--muted)" font-size="8.5" font-family="'Geist Mono', monospace" letter-spacing="0.12em" font-weight="600">LEGEND:</text>
+
+          <circle cx="120" cy="589" r="4" fill="#eb6c36"/>
+          <text x="130" y="592" fill="var(--ink)" font-size="9" font-family="'Geist', sans-serif">Core Ingestion / Compactor</text>
+
+          <circle cx="310" cy="589" r="4" fill="#0969da"/>
+          <text x="320" y="592" fill="var(--ink)" font-size="9" font-family="'Geist', sans-serif">Prometheus Metrics Flow</text>
+
+          <circle cx="490" cy="589" r="4" fill="#1a7f37"/>
+          <text x="500" y="592" fill="var(--ink)" font-size="9" font-family="'Geist', sans-serif">OTel Container Logs Flow</text>
+
+          <line x1="670" y1="589" x2="690" y2="589" stroke="var(--ink-secondary)" stroke-width="1.2" stroke-dasharray="4,3"/>
+          <text x="696" y="592" fill="var(--ink)" font-size="9" font-family="'Geist', sans-serif">Local Metadata Sync</text>
+        </svg>
+      </div>
+    </section>
+
+    <!-- Summary Cards Pattern -->
+    <section class="cards-grid">
+      <div class="card">
+        <div>
+          <div class="card-eyebrow">METRICS INGESTION</div>
+          <div class="card-header">
+            <span class="card-dot dot-blue"></span>
+            <h3 class="card-title">Prometheus Agent Mode</h3>
+          </div>
+          <ul class="card-list">
+            <li><strong>kube-prometheus-stack</strong> ทำหน้าที่เป็น In-memory Scraper สแครปข้อมูล Node, Pod, และ Container Metrics</li>
+            <li>ส่งข้อมูลตรงเข้า OpenObserve ผ่าน <strong>Prometheus Remote Write</strong> โดยไม่เปลืองพื้นที่ Local TSDB ของ Prometheus</li>
+            <li>สตรีมข้อมูลเข้า Stream ชนิด Prometheus พร้อมรองรับคิวรีผ่านภาษา PromQL ทันที</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div>
+          <div class="card-eyebrow">LOG PIPELINE</div>
+          <div class="card-header">
+            <span class="card-dot dot-green"></span>
+            <h3 class="card-title">OpenTelemetry Collector</h3>
+          </div>
+          <ul class="card-list">
+            <li>ติดตั้งแบบ <strong>DaemonSet</strong> ประจำทุก Worker Node เพื่อเก็บ Log ระดับ Container ทั้งหมด</li>
+            <li>ใช้ <strong>filelog receiver</strong> อ่านพาธล็อกตรงจาก <code>/var/log/pods/*/*/*.log</code></li>
+            <li>สกัด Metadata สำคัญ (<code>namespace</code>, <code>pod</code>, <code>container</code>) ด้วย <strong>k8sattributes</strong> ก่อนยิง OTLP เข้า Stream <code>k8s_logs</code></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div>
+          <div class="card-eyebrow">RETENTION &amp; RESILIENCE</div>
+          <div class="card-header">
+            <span class="card-dot dot-coral"></span>
+            <h3 class="card-title">Storage &amp; Auto-Compactor</h3>
+          </div>
+          <ul class="card-list">
+            <li><strong>MinIO S3 Backend (20Gi)</strong> จัดเก็บ Log และ Metric ในฟอร์แมต Parquet ถาวร ป้องกันข้อมูลหายเมื่อ Pod รีสตาร์ท</li>
+            <li><strong>Data Retention 1 วัน (24 ชม.)</strong> ควบคุมด้วย <code>ZO_DATA_RETENTION_DAYS: 1</code></li>
+            <li><strong>Auto-Compactor (300s)</strong> เคลียร์บล็อกข้อมูลเก่าและรวมไฟล์ Parquet ขนาดเล็กทุก ๆ 5 นาที</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Credentials and Endpoints Table -->
+    <section class="table-section" id="credentials">
+      <div class="section-header">
+        <div>
+          <div class="section-eyebrow">CONFIGURATION &amp; ACCESS</div>
+          <h2 class="section-title">ข้อมูลการเข้าถึงระบบและพอร์ตบริการ</h2>
+        </div>
+      </div>
+
+      <div class="custom-table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>รายการบริการ (Service Component)</th>
+              <th>Endpoint / การเข้าถึง</th>
+              <th>ชื่อผู้ใช้ (Username)</th>
+              <th>รหัสผ่าน (Password)</th>
+              <th>หมายเหตุ / รายละเอียด</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>OpenObserve Web UI</strong></td>
+              <td><span class="code-pill">http://&lt;NODE_IP&gt;:30080</span></td>
+              <td><span class="code-pill">root@example.com</span></td>
+              <td><span class="code-pill">Complexpass#123</span></td>
+              <td><span class="badge-accent">NodePort 30080</span> แดชบอร์ดและหน้าค้นหา Logs / Metrics</td>
+            </tr>
+            <tr>
+              <td><strong>Prometheus Remote Write</strong></td>
+              <td><span class="code-pill">/api/default/prometheus/api/v1/write</span></td>
+              <td><span class="code-pill">root@example.com</span></td>
+              <td><span class="code-pill">Complexpass#123</span></td>
+              <td>รับ Ingestion Metrics จาก kube-prometheus-stack</td>
+            </tr>
+            <tr>
+              <td><strong>OTel Logs Ingestion</strong></td>
+              <td><span class="code-pill">http://openobserve:5080/api/default/</span></td>
+              <td><span class="code-pill">root@example.com</span></td>
+              <td><span class="code-pill">Complexpass#123</span></td>
+              <td>OTLP HTTP Endpoint เข้า Stream <span class="code-pill">k8s_logs</span></td>
+            </tr>
+            <tr>
+              <td><strong>MinIO S3 Storage Console</strong></td>
+              <td><span class="code-pill">http://10.43.85.185:9001</span></td>
+              <td><span class="code-pill">minioadmin</span></td>
+              <td><span class="code-pill">minioadminpassword</span></td>
+              <td><span class="badge-green">S3 Backend</span> จัดเก็บ Parquet files 20Gi</td>
+            </tr>
+            <tr>
+              <td><strong>Data Retention Policy</strong></td>
+              <td><span class="code-pill">ZO_DATA_RETENTION_DAYS: 1</span></td>
+              <td>—</td>
+              <td>—</td>
+              <td>นโยบายลบข้อมูลเก่าหลัง 24 ชม. ทุก Stream</td>
+            </tr>
+            <tr>
+              <td><strong>Compactor Interval</strong></td>
+              <td><span class="code-pill">ZO_COMPACTOR_INTERVAL: 300s</span></td>
+              <td>—</td>
+              <td>—</td>
+              <td>รอบการทำงานบีบอัดและลบข้อมูลเก่าทุก 5 นาที</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Quickstart Section -->
+    <section class="quickstart-section" id="quickstart">
+      <div class="section-header">
+        <div>
+          <div class="section-eyebrow">COMMAND-LINE EXECUTION</div>
+          <h2 class="section-title">ขั้นตอนการติดตั้งและเริ่มต้นใช้งาน</h2>
+        </div>
+      </div>
+
+      <div class="grid-2col">
+        <div class="step-card">
+          <div>
+            <div class="step-header">
+              <span class="step-title">1. ติดตั้งระบบทั้งหมด (Deploy Stack)</span>
+              <span class="step-num">STEP 1</span>
+            </div>
+            <p class="step-desc">
+              สั่งรันสคริปต์เพื่อสร้าง Namespace, ติดตั้ง OpenObserve Helm Release, kube-prometheus-stack, OpenTelemetry Collector DaemonSet และ Provision Dashboards:
+            </p>
+          </div>
+          <div class="code-terminal">
+            <code>./scripts/deploy.sh</code>
+            <button class="copy-btn" onclick="copyText('./scripts/deploy.sh', this)">Copy</button>
+          </div>
+        </div>
+
+        <div class="step-card">
+          <div>
+            <div class="step-header">
+              <span class="step-title">2. ตรวจสอบสถานะความพร้อม (Health Check)</span>
+              <span class="step-num">STEP 2</span>
+            </div>
+            <p class="step-desc">
+              ตรวจสอบสถานะ Pod ทุกตัว, Storage (PVC) ในสถานะ Bound, ค่าคอนฟิก Retention 1 วัน และการตอบกลับของ HTTP Web UI:
+            </p>
+          </div>
+          <div class="code-terminal">
+            <code>./scripts/verify-health.sh</code>
+            <button class="copy-btn" onclick="copyText('./scripts/verify-health.sh', this)">Copy</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Test Suite Section -->
+    <section class="test-suite-section" id="test-suite">
+      <div class="section-header">
+        <div>
+          <div class="section-eyebrow">AUTOMATED TEST SUITE &amp; VERIFICATION</div>
+          <h2 class="section-title">ชุดสคริปต์ทดสอบและตรวจสอบระบบ (E2E)</h2>
+        </div>
+        <div>
+          <button class="copy-btn" style="padding: 8px 14px; font-size: 12px; background: var(--accent); color: #fff;" onclick="copyText('./scripts/run-all-tests.sh', this)">
+            ⚡ Copy Master Test Runner
+          </button>
+        </div>
+      </div>
+
+      <div class="test-card-grid">
+        <div class="test-item">
+          <div class="test-badge-line">
+            <span class="test-filename">scripts/test-logs.sh</span>
+            <span class="badge-green">Logs</span>
+          </div>
+          <h4 class="test-title">Container Logs &amp; Metadata Verification</h4>
+          <p class="test-desc">ตรวจเช็กว่า OTel Collector ส่ง Container Logs เข้า Stream <code>k8s_logs</code> และสกัด Kubernetes Metadata (namespace, pod, container) ครบถ้วน</p>
+        </div>
+
+        <div class="test-item">
+          <div class="test-badge-line">
+            <span class="test-filename">scripts/test-metrics.sh</span>
+            <span class="badge-accent">Metrics</span>
+          </div>
+          <h4 class="test-title">Prometheus Metrics Stream Ingestion</h4>
+          <p class="test-desc">ตรวจสอบการไหลเข้าของ Core Metrics (CPU, Memory, Container Usage, Pod Phases) ผ่าน Prometheus Remote Write</p>
+        </div>
+
+        <div class="test-item">
+          <div class="test-badge-line">
+            <span class="test-filename">scripts/test-dashboards.sh</span>
+            <span class="badge-green">PromQL</span>
+          </div>
+          <h4 class="test-title">Declarative Dashboards Validation</h4>
+          <p class="test-desc">ตรวจสอบว่าแดชบอร์ด Cluster Overview และ Workload Metrics ถูกสร้างและมีโครงสร้าง PromQL สมบูรณ์บน OpenObserve REST API</p>
+        </div>
+
+        <div class="test-item">
+          <div class="test-badge-line">
+            <span class="test-filename">scripts/test-resilience.sh</span>
+            <span class="badge-accent">Resilience</span>
+          </div>
+          <h4 class="test-title">Crash Simulation &amp; Data Persistence</h4>
+          <p class="test-desc">จำลองเหตุการณ์ Pod แครชโดยการสั่งลบ Pod แล้วตรวจสอบว่าหลัง Pod ใหม่เริ่มทำงาน ข้อมูล Logs และ Metrics บน MinIO ยังคงอยู่ครบถ้วน</p>
+        </div>
+
+        <div class="test-item" style="grid-column: 1 / -1;">
+          <div class="test-badge-line">
+            <span class="test-filename">scripts/run-all-tests.sh</span>
+            <span class="badge-accent">Master Suite</span>
+          </div>
+          <h4 class="test-title">End-to-End Master Test Runner</h4>
+          <p class="test-desc">รันการทดสอบทุกชุดแบบต่อเนื่อง พร้อมรายงานสรุปผล Pass/Fail ครบทุกมิติของระบบ</p>
+          <div class="code-terminal" style="margin-top: 0.75rem;">
+            <code>./scripts/run-all-tests.sh</code>
+            <button class="copy-btn" onclick="copyText('./scripts/run-all-tests.sh', this)">Copy Command</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Cleanup Section -->
+    <section class="cleanup-box">
+      <h3 class="cleanup-title">การลบและคลีนอัปสภาพแวดล้อม (Cleanup)</h3>
+      <p class="cleanup-desc">
+        เมื่อต้องการถอนการติดตั้ง สามารถเลือกลบเฉพาะ Helm Releases (คงข้อมูลใน PVC) หรือลบทั้งหมดแบบสมบูรณ์:
+      </p>
+      <div class="grid-2col">
+        <div class="code-terminal">
+          <code>./scripts/cleanup.sh</code>
+          <button class="copy-btn" onclick="copyText('./scripts/cleanup.sh', this)">Copy (Keep Data)</button>
+        </div>
+        <div class="code-terminal">
+          <code>./scripts/cleanup.sh --purge</code>
+          <button class="copy-btn" onclick="copyText('./scripts/cleanup.sh --purge', this)">Copy (Purge All)</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Colophon / Footer -->
+    <footer>
+      <div>OpenObserve Standalone on Kubernetes Lab • Infrastructure Observability Specification</div>
+      <div>Prometheus Agent Mode • OpenTelemetry Collector • MinIO Parquet Backend</div>
+    </footer>
+  </main>
+
+  <script>
+    // Theme Toggle Functionality
+    function toggleTheme() {
+      const html = document.documentElement;
+      const currentTheme = html.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', newTheme);
+      
+      const themeIcon = document.getElementById('themeIcon');
+      const themeText = document.getElementById('themeText');
+      
+      if (newTheme === 'dark') {
+        themeIcon.textContent = '🌙';
+        themeText.textContent = 'Dark';
+      } else {
+        themeIcon.textContent = '☀️';
+        themeText.textContent = 'Light';
+      }
+      localStorage.setItem('theme', newTheme);
+    }
+
+    // Restore saved theme preference
+    (function() {
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme) {
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        const themeIcon = document.getElementById('themeIcon');
+        const themeText = document.getElementById('themeText');
+        if (themeIcon && themeText) {
+          if (savedTheme === 'dark') {
+            themeIcon.textContent = '🌙';
+            themeText.textContent = 'Dark';
+          } else {
+            themeIcon.textContent = '☀️';
+            themeText.textContent = 'Light';
+          }
+        }
+      }
+    })();
+
+    // Copy to clipboard helper
+    function copyText(text, btnElement) {
+      navigator.clipboard.writeText(text).then(() => {
+        const originalText = btnElement.textContent;
+        btnElement.textContent = 'Copied!';
+        btnElement.style.background = 'var(--success)';
+        btnElement.style.color = '#ffffff';
+        setTimeout(() => {
+          btnElement.textContent = originalText;
+          btnElement.style.background = '';
+          btnElement.style.color = '';
+        }, 1800);
+      });
+    }
+
+    // Diagram Flow Interactive Filter
+    function filterFlow(flowType, btn) {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const nodes = document.querySelectorAll('.node-box');
+      const lines = document.querySelectorAll('.flow-line');
+
+      if (flowType === 'all') {
+        nodes.forEach(n => n.classList.remove('dimmed'));
+        lines.forEach(l => {
+          l.classList.remove('dimmed');
+          l.classList.remove('highlighted');
+        });
+        return;
+      }
+
+      nodes.forEach(n => {
+        const flow = n.getAttribute('data-flow');
+        if (flow === flowType || flow === 'all') {
+          n.classList.remove('dimmed');
+        } else {
+          n.classList.add('dimmed');
+        }
+      });
+
+      lines.forEach(l => {
+        const flow = l.getAttribute('data-flow');
+        if (flow === flowType) {
+          l.classList.remove('dimmed');
+          l.classList.add('highlighted');
+        } else {
+          l.classList.add('dimmed');
+          l.classList.remove('highlighted');
+        }
+      });
+    }
+  </script>
+</body>
+</html>

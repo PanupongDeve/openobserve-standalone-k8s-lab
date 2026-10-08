@@ -1,0 +1,63 @@
+# OpenObserve Standalone Helm Configuration
+# Lab Profile for Kubernetes Cluster
+
+persistence:
+  enabled: true
+  storageClass: "local-path"
+  size: 10Gi
+  accessModes:
+    - ReadWriteOnce
+
+auth:
+  ZO_ROOT_USER_EMAIL: "root@example.com"
+  ZO_ROOT_USER_PASSWORD: "Complexpass#123"
+
+config:
+  ZO_NODE_ROLE: "all"
+  ZO_LOCAL_MODE: "true"
+  ZO_LOCAL_MODE_STORAGE: "s3"
+  ZO_META_STORE: "sqlite"
+  ZO_HTTP_PORT: "5080"
+
+service:
+  type: NodePort
+  http_port: 5080
+  http_nodePort: 30080
+  grpc_port: 5081
+  grpc_nodePort: 30081
+
+resources:
+  requests:
+    cpu: 250m
+    memory: 512Mi
+  limits:
+    cpu: 1000m
+    memory: 2Gi
+
+minio:
+  enabled: true
+  mode: standalone
+  replicas: 1
+  rootUser: minioadmin
+  rootPassword: minioadminpassword
+  image:
+    repository: cgr.dev/chainguard/minio
+    tag: latest
+    pullPolicy: IfNotPresent
+  mcImage:
+    repository: docker.io/library/local-minio-mc
+    tag: v1
+    pullPolicy: IfNotPresent
+  persistence:
+    enabled: true
+    storageClass: "local-path"
+    size: 20Gi
+    accessModes:
+      - ReadWriteOnce
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
